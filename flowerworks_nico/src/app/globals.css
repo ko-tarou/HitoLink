@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --cream: #FDFCF8;
+  --sage: #5C6F4E;
+  --dusty-pink: #C0887A;
+  --charcoal: #2C2C2C;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--cream);
+  color: var(--charcoal);
+}
+
+/* Smooth scroll container for Lenis-like feel */
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
