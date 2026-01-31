@@ -1,0 +1,41 @@
+@import "tailwindcss";
+
+:root {
+  /* Earth tones & organic palette */
+  --cream: #f7f5f0;
+  --cream-dark: #ebe8e0;
+  --beige: #e8e4dc;
+  --sand: #d4cfc4;
+  --charcoal: #3d3a35;
+  --charcoal-light: #5c5852;
+  --muted-green: #7d8b7a;
+  --sage: #9ca896;
+  --warm-gray: #8a8580;
+  --accent: #6b7366;
+}
+
+@theme inline {
+  --color-cream: var(--cream);
+  --color-cream-dark: var(--cream-dark);
+  --color-beige: var(--beige);
+  --color-sand: var(--sand);
+  --color-charcoal: var(--charcoal);
+  --color-charcoal-light: var(--charcoal-light);
+  --color-muted-green: var(--muted-green);
+  --color-sage: var(--sage);
+  --color-warm-gray: var(--warm-gray);
+  --color-accent: var(--accent);
+  --font-sans: var(--font-noto-sans-jp), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-shippori-mincho), "Yu Mincho", serif;
+  --font-display: var(--font-playfair), Georgia, serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--cream);
+  color: var(--charcoal);
+  font-family: var(--font-noto-sans-jp), ui-sans-serif, system-ui, sans-serif;
+}
