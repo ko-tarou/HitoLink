@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --offwhite: #fcfcfc;
+  --darkgray: #333333;
+  --accent: #a8d4e6;
+  --warmbeige: #e8dfd4;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--offwhite);
+  color: var(--darkgray);
+}
+
+/* Custom selection */
+::selection {
+  background-color: var(--accent);
+  color: var(--darkgray);
+}
+
+/* Smooth scroll for anchor links */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
