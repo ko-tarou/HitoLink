@@ -1,0 +1,31 @@
+@import "tailwindcss";
+
+@theme {
+  /* TOBIRA カラーパレット */
+  --color-forest: #1a2f1a;
+  --color-forest-deep: #0f1f0f;
+  --color-wood: #4a3728;
+  --color-wood-light: #6b5344;
+  --color-brass: #b8860b;
+  --color-brass-light: #d4a84b;
+  --color-offwhite: #f8f6f2;
+  --color-cream: #f0ebe3;
+  --color-mist: rgba(248, 246, 242, 0.85);
+  --font-serif: "Cormorant Garamond", serif;
+  --font-sans: "Noto Sans JP", sans-serif;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply antialiased;
+    color: var(--color-wood);
+    background-color: var(--color-offwhite);
+    font-family: var(--font-sans);
+  }
+  h1, h2, h3 {
+    font-family: var(--font-serif);
+  }
+}
