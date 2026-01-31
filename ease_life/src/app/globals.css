@@ -1,0 +1,50 @@
+@import "tailwindcss";
+
+:root {
+  --background: #faf8f5;
+  --foreground: #2c2416;
+  --cream: #f5f0e8;
+  --cream-dark: #e8e0d4;
+  --brown: #3d3226;
+  --brown-dark: #2c2416;
+  --brass: #b8860b;
+  --brass-light: #d4a84b;
+  --green: #2d4a3e;
+  --green-light: #3d5c4e;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-cream: var(--cream);
+  --color-cream-dark: var(--cream-dark);
+  --color-brown: var(--brown);
+  --color-brown-dark: var(--brown-dark);
+  --color-brass: var(--brass);
+  --color-brass-light: var(--brass-light);
+  --color-green: var(--green);
+  --color-green-light: var(--green-light);
+  --font-serif: var(--font-playfair);
+  --font-serif-jp: var(--font-noto-serif-jp);
+  --font-sans: var(--font-dm-sans);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
+}
+
+.font-display {
+  font-family: var(--font-playfair), Georgia, serif;
+}
+
+.font-display-jp {
+  font-family: var(--font-noto-serif-jp), "Hiragino Mincho ProN", serif;
+}
+
+/* Selection */
+::selection {
+  background: var(--brass);
+  color: var(--cream);
+}
