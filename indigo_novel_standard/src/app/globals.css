@@ -1,0 +1,48 @@
+@import "tailwindcss";
+
+:root {
+  --background: #fafaf9;
+  --foreground: #171717;
+  --indigo-deep: #1e3a5f;
+  --indigo-darker: #152a47;
+  --indigo-light: #2d5a8a;
+  --concrete: #737373;
+  --concrete-light: #a3a3a3;
+  --wood: #8b7355;
+  --wood-light: #a08060;
+  --white: #ffffff;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-indigo-deep: var(--indigo-deep);
+  --color-indigo-darker: var(--indigo-darker);
+  --color-indigo-light: var(--indigo-light);
+  --color-concrete: var(--concrete);
+  --color-concrete-light: var(--concrete-light);
+  --color-wood: var(--wood);
+  --color-wood-light: var(--wood-light);
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-cormorant), ui-serif, Georgia, serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  font-weight: 400;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-serif);
+}
