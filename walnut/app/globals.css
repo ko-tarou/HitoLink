@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-zen-old-mincho: 'Zen Old Mincho', 'Hiragino Mincho ProN', serif;
+  --font-zen-kaku: 'Zen Kaku Gothic New', 'Hiragino Kaku Gothic ProN', sans-serif;
+  --sage: 134 32% 55%;
+  --beige: 30 25% 90%;
+  --terracotta: 12 60% 60%;
+  --cream: 40 50% 98%;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply font-body text-beige-900 antialiased;
+  background-color: #fdfbf7;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
