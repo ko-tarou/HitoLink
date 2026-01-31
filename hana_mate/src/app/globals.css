@@ -1,0 +1,107 @@
+@import "tailwindcss";
+
+:root {
+  --background: #FDFBF7;
+  --foreground: #2C2C2C;
+  --sage-50: #f4f7f0;
+  --sage-100: #e8eedf;
+  --sage-200: #d4dfc4;
+  --sage-300: #b5c99a;
+  --sage-400: #9cb378;
+  --sage-500: #7d9b5c;
+  --sage-600: #617a47;
+  --sage-700: #4c6039;
+  --sage-800: #404f31;
+  --sage-900: #36422b;
+  --cream: #FDFBF7;
+  --cream-warm: #FAF6F0;
+  --cream-soft: #F5F0E8;
+  --brown-light: #A0826D;
+  --brown: #8B7355;
+  --brown-dark: #6B5344;
+  --charcoal: #2C2C2C;
+  --charcoal-soft: #3D3D3D;
+  --charcoal-muted: #5a5a5a;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-sage-50: var(--sage-50);
+  --color-sage-100: var(--sage-100);
+  --color-sage-200: var(--sage-200);
+  --color-sage-300: var(--sage-300);
+  --color-sage-400: var(--sage-400);
+  --color-sage-500: var(--sage-500);
+  --color-sage-600: var(--sage-600);
+  --color-sage-700: var(--sage-700);
+  --color-cream: var(--cream);
+  --color-cream-warm: var(--cream-warm);
+  --color-cream-soft: var(--cream-soft);
+  --color-brown-light: var(--brown-light);
+  --color-brown: var(--brown);
+  --color-brown-dark: var(--brown-dark);
+  --color-charcoal: var(--charcoal);
+  --color-charcoal-soft: var(--charcoal-soft);
+  --color-charcoal-muted: var(--charcoal-muted);
+  --font-sans: var(--font-noto-sans-jp);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-noto-sans-jp), sans-serif;
+}
+
+/* Glassmorphism utility */
+.glass {
+  background: rgba(253, 251, 247, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.glass-dark {
+  background: rgba(44, 44, 44, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Overlay for hero / image sections */
+.overlay-hero {
+  background: linear-gradient(
+    to bottom,
+    rgba(44, 44, 44, 0.35) 0%,
+    rgba(44, 44, 44, 0.2) 40%,
+    rgba(44, 44, 44, 0.5) 100%
+  );
+}
+
+.overlay-card {
+  background: linear-gradient(
+    to top,
+    rgba(44, 44, 44, 0.75) 0%,
+    rgba(44, 44, 44, 0.2) 60%,
+    transparent 100%
+  );
+}
+
+/* Display typography */
+.text-display {
+  letter-spacing: -0.02em;
+  font-feature-settings: "palt" 1;
+}
+
+/* Hide scrollbar for gallery strip */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
