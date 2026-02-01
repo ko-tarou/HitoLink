@@ -54,7 +54,7 @@ export default async function FreshnessPage() {
 
       <section aria-labelledby="disposal-heading">
         <h3 id="disposal-heading" className="text-base font-semibold text-text mb-3">
-          廃棄予定が近い在庫（3日以内）
+          品質管理：要確認の在庫（3日以内）
         </h3>
         <div className="rounded-xl bg-base border border-border overflow-hidden">
           <ul className="divide-y divide-border" role="list">

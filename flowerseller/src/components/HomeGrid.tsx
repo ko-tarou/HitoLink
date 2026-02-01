@@ -41,7 +41,7 @@ const tiles = [
   {
     href: "/freshness",
     label: "鮮度管理",
-    sublabel: "水やり・廃棄予定",
+    sublabel: "水やり・品質管理",
     icon: Droplets,
     large: false,
   },

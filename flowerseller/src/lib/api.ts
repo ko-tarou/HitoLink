@@ -67,13 +67,7 @@ export async function apiDelete(path: string, token?: string | null): Promise<vo
 }
 
 export function getAuthToken(cookieHeader?: string | null): string | null {
-  if (typeof document !== "undefined") {
-    const m = document.cookie.match(/auth=([^;]+)/);
-    return m ? decodeURIComponent(m[1]) : null;
-  }
-  if (cookieHeader) {
-    const m = cookieHeader.match(/auth=([^;]+)/);
-    return m ? decodeURIComponent(m[1].trim()) : null;
-  }
-  return null;
+  const source = cookieHeader != null && cookieHeader !== "" ? cookieHeader : (typeof document !== "undefined" ? document.cookie : "");
+  const m = source.match(/auth=([^;]+)/);
+  return m ? decodeURIComponent(m[1].trim()) : null;
 }

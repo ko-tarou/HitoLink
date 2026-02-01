@@ -15,7 +15,7 @@ export default function MainLayout({
           className={btn.iconBack}
           aria-label="ホームへ戻る"
         >
-          <ArrowLeft className="w-6 h-6" aria-hidden />
+          <ArrowLeft className="w-8 h-8" aria-hidden />
         </Link>
         <span className="font-bold text-lg">Flower Seller</span>
       </header>

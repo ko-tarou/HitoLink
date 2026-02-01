@@ -8,9 +8,9 @@ export const btn = {
   /** サブアクション（キャンセル・戻るなど） */
   secondary:
     "inline-flex items-center justify-center gap-2 rounded-lg border-2 border-border bg-base text-text px-6 py-3 text-base font-medium hover:bg-base-muted transition focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 min-h-[48px]",
-  /** ヘッダー内の戻るアイコン用 */
+  /** ヘッダー内の戻るアイコン用（押しやすいサイズ） */
   iconBack:
-    "inline-flex items-center justify-center p-3 rounded-lg bg-base-subtle text-text border border-border hover:bg-base-muted transition focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 min-w-[48px] min-h-[48px]",
+    "inline-flex items-center justify-center p-4 rounded-xl bg-base-subtle text-text border-2 border-border hover:bg-base-muted transition focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 min-w-[56px] min-h-[56px]",
 } as const;
 
 /** ページコンテナ（一覧・詳細） */

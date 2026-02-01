@@ -145,7 +145,7 @@ export function ProductNewForm({ categories }: { categories: CategoryOption[] })
       </div>
       <div>
         <label htmlFor="product-disposal-days" className="block text-sm font-medium text-text mb-2">
-          廃棄予定までの日数（鮮度）
+          品質管理の目安（日数・鮮度）
         </label>
         <input
           id="product-disposal-days"
@@ -155,7 +155,7 @@ export function ProductNewForm({ categories }: { categories: CategoryOption[] })
           onChange={(e) => setDisposalDays(e.target.value)}
           className="w-full rounded-lg border border-border bg-base px-4 py-3 text-text placeholder:text-text-muted focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none"
           placeholder="未設定"
-          aria-label="廃棄予定までの日数"
+          aria-label="品質管理の目安（日数）"
         />
       </div>
       {error && (
