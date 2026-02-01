@@ -51,12 +51,15 @@ func main() {
 		// Categories
 		r.Get("/categories", h.ListCategories)
 		r.Post("/categories", h.CreateCategory)
-		// Products
-		r.Get("/products", h.ListProducts)
-		r.Get("/products/{id}", h.GetProduct)
-		r.Post("/products", h.CreateProduct)
-		r.Patch("/products/{id}", h.UpdateProduct)
-		r.Delete("/products/{id}", h.DeleteProduct)
+		// Products: /similar must be before /{id} so "similar" is not treated as product id
+		r.Route("/products", func(r chi.Router) {
+			r.Get("/", h.ListProducts)
+			r.Get("/similar", h.SimilarProducts)
+			r.Get("/{id}", h.GetProduct)
+			r.Post("/", h.CreateProduct)
+			r.Patch("/{id}", h.UpdateProduct)
+			r.Delete("/{id}", h.DeleteProduct)
+		})
 		// Inventory
 		r.Get("/inventory_batches", h.ListInventoryBatches)
 		r.Post("/inventory_batches", h.CreateInventoryBatch)

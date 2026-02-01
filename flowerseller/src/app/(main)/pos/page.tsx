@@ -2,7 +2,6 @@ import Link from "next/link";
 import { getSales } from "@/lib/actions/sales";
 import { formatYen, formatDateTime } from "@/lib/utils";
 import { Receipt } from "lucide-react";
-import { PageHeader } from "@/components/ui/PageHeader";
 import { pageContainer } from "@/lib/ui-classes";
 import { btn } from "@/lib/ui-classes";
 
@@ -17,18 +16,15 @@ export default async function PosPage() {
 
   return (
     <div className={pageContainer}>
-      <PageHeader
-        title="売上"
-        action={
-          <Link
-            href="/pos/new"
-            className={btn.primary}
-            aria-label="売上を新規登録"
-          >
-            <Receipt className="w-6 h-6" aria-hidden /> 売上登録
-          </Link>
-        }
-      />
+      <div className="flex justify-end mb-4">
+        <Link
+          href="/pos/new"
+          className={btn.primary}
+          aria-label="売上を新規登録"
+        >
+          <Receipt className="w-6 h-6" aria-hidden /> 売上登録
+        </Link>
+      </div>
 
       <section aria-labelledby="sales-history-heading">
         <h3 id="sales-history-heading" className="text-base font-semibold text-text mb-3">

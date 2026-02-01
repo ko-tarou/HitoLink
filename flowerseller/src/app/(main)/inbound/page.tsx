@@ -2,7 +2,6 @@ import Link from "next/link";
 import { getInboundRecords } from "@/lib/actions/inbound";
 import { formatDateTime } from "@/lib/utils";
 import { Upload } from "lucide-react";
-import { PageHeader } from "@/components/ui/PageHeader";
 import { pageContainer } from "@/lib/ui-classes";
 import { btn } from "@/lib/ui-classes";
 
@@ -11,18 +10,15 @@ export default async function InboundPage() {
 
   return (
     <div className={pageContainer}>
-      <PageHeader
-        title="入荷（OCR取り込み）"
-        action={
-          <Link
-            href="/inbound/new"
-            className={btn.primary}
-            aria-label="入荷を新規登録"
-          >
-            <Upload className="w-6 h-6" aria-hidden /> 入荷登録
-          </Link>
-        }
-      />
+      <div className="flex justify-end mb-4">
+        <Link
+          href="/inbound/new"
+          className={btn.primary}
+          aria-label="入荷を新規登録"
+        >
+          <Upload className="w-6 h-6" aria-hidden /> 入荷登録
+        </Link>
+      </div>
 
       <p className="text-sm text-text-secondary mb-6">
         仕入れ表を撮影/アップロードしてOCRで在庫登録。または手動で入荷を登録できます。

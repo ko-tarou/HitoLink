@@ -3,7 +3,6 @@ import { getWateringRecords } from "@/lib/actions/watering";
 import { formatDate, formatDateTime } from "@/lib/utils";
 import { Droplets } from "lucide-react";
 import { WateringForm } from "./WateringForm";
-import { PageHeader } from "@/components/ui/PageHeader";
 
 export default async function FreshnessPage() {
   const [batches, wateringReminders] = await Promise.all([
@@ -21,8 +20,6 @@ export default async function FreshnessPage() {
 
   return (
     <div className="mx-auto px-6 py-6 max-w-2xl">
-      <PageHeader title="鮮度管理" />
-
       <section className="mb-8" aria-labelledby="watering-heading">
         <h3 id="watering-heading" className="text-base font-semibold text-text mb-3 flex items-center gap-2">
           <Droplets className="w-5 h-5 text-primary" aria-hidden /> 水やりリマインド

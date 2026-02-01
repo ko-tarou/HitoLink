@@ -2,6 +2,8 @@
 -- No Supabase auth.users; no RLS. App-level auth.
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+-- 名前の類似度検索（商品登録時の重複チェック用）
+CREATE EXTENSION IF NOT EXISTS "pg_trgm";
 
 -- ENUMS
 CREATE TYPE product_type AS ENUM ('single', 'bundle', 'arrangement');
@@ -32,6 +34,7 @@ CREATE TABLE categories (
 CREATE TABLE products (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   name TEXT NOT NULL,
+  name_normalized TEXT,
   type product_type NOT NULL,
   category_id UUID REFERENCES categories(id) ON DELETE SET NULL,
   base_price DECIMAL(12, 2) NOT NULL CHECK (base_price >= 0),
@@ -41,9 +44,13 @@ CREATE TABLE products (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+COMMENT ON COLUMN products.name_normalized IS '類似検索用: ひらがな統一（カタカナ→ひらがな、漢字→ひらがな）';
+-- 既存DBにカラム追加: ALTER TABLE products ADD COLUMN name_normalized TEXT; 既存行は商品の更新保存で自動設定される。
+
 CREATE INDEX idx_products_category ON products(category_id);
 CREATE INDEX idx_products_type ON products(type);
 CREATE INDEX idx_products_name ON products(name);
+CREATE INDEX idx_products_name_normalized ON products(name_normalized) WHERE name_normalized IS NOT NULL;
 CREATE INDEX idx_products_updated ON products(updated_at);
 
 CREATE TABLE product_components (

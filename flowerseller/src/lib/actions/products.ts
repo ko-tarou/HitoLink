@@ -36,6 +36,19 @@ export async function getProduct(id: string) {
   return data;
 }
 
+/** 名前が似ている商品を取得（pg_trgm 類似度 or ILIKE フォールバック） */
+export async function getSimilarProducts(
+  name: string,
+  limit = 5
+): Promise<{ id: string; name: string; type: string; base_price: number; similarity?: number }[]> {
+  const params = new URLSearchParams({ name: name.trim(), limit: String(limit) });
+  const list = await apiGet<{ id: string; name: string; type: string; base_price: number; similarity?: number }[]>(
+    `/api/products/similar?${params}`,
+    await getToken()
+  );
+  return list ?? [];
+}
+
 export async function createProduct(input: {
   name: string;
   type: ProductType;

@@ -4,7 +4,6 @@ import { getProducts } from "@/lib/actions/products";
 import { getInventoryBatches } from "@/lib/actions/inventory";
 import { getCategories } from "@/lib/actions/categories";
 import { Plus } from "lucide-react";
-import { PageHeader } from "@/components/ui/PageHeader";
 import { pageContainer } from "@/lib/ui-classes";
 import { btn } from "@/lib/ui-classes";
 import { SearchBar } from "@/components/SearchBar";
@@ -38,18 +37,15 @@ export default async function InventoryPage({
 
   return (
     <div className={pageContainer}>
-      <PageHeader
-        title="在庫管理"
-        action={
-          <Link
-            href="/inventory/products/new"
-            className={btn.primary}
-            aria-label="商品を新規登録"
-          >
-            <Plus className="w-6 h-6" aria-hidden /> 商品登録
-          </Link>
-        }
-      />
+      <div className="flex justify-end mb-4">
+        <Link
+          href="/inventory/products/new"
+          className={btn.primary}
+          aria-label="商品を新規登録"
+        >
+          <Plus className="w-6 h-6" aria-hidden /> 商品登録
+        </Link>
+      </div>
 
       <SearchBar />
 

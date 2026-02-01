@@ -136,3 +136,17 @@ go test ./middleware/... -v
 ```
 
 環境変数 `API_BASE` で URL を変更できます（例: `API_BASE=http://localhost:8080 ./scripts/api-test.sh`）。
+
+## 類似商品チェック（ばら/バラ）が動かないとき
+
+1. **バックエンドのログを確認**  
+   商品名入力時に `[SimilarProducts] name=... nameNorm=... results=...` が出るか確認。出ない場合はリクエストが Go に届いていない（フロントの API 先や CORS を確認）。
+
+2. **フロントのエラー表示**  
+   「類似商品の取得に失敗しました」や 404/500 が出る場合は、ブラウザの開発者ツールの Network で `GET .../api/products/similar?name=...` のレスポンスを確認。
+
+3. **直接 API を叩く**  
+   ```bash
+   curl -s "http://localhost:8080/api/products/similar?name=ばら&limit=5"
+   ```  
+   空配列 `[]` なら商品が無いか名前が一致していない。JSON が返ればバックエンドは正常。

@@ -2,7 +2,6 @@ import { getCategories } from "@/lib/actions/categories";
 import { getPriceAdjustmentHistory } from "@/lib/actions/price";
 import { formatDateTime } from "@/lib/utils";
 import { PriceAdjustForm } from "./PriceAdjustForm";
-import { PageHeader } from "@/components/ui/PageHeader";
 
 type HistoryItem = {
   id: string;
@@ -21,8 +20,6 @@ export default async function PricePage() {
 
   return (
     <div className="mx-auto px-6 py-6 max-w-2xl">
-      <PageHeader title="価格管理（一括調整）" />
-
       <PriceAdjustForm categories={categories} />
 
       <section className="mt-8" aria-labelledby="price-history-heading">
