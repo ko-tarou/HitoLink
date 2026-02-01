@@ -1,0 +1,90 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Botanical Modern Luxury - Design System */
+    --background: #F9F9F7;
+    --foreground: #2D3436;
+    --card: rgba(255, 255, 255, 0.72);
+    --card-foreground: #2D3436;
+    --popover: rgba(255, 255, 255, 0.95);
+    --popover-foreground: #2D3436;
+    --primary: #4A5D4F;
+    --primary-foreground: #F9F9F7;
+    --secondary: #A3B18A;
+    --secondary-foreground: #2D3436;
+    --muted: rgba(163, 177, 138, 0.25);
+    --muted-foreground: #636E72;
+    --accent: #D4A373;
+    --accent-foreground: #2D3436;
+    --destructive: #BC4749;
+    --destructive-foreground: #F9F9F7;
+    --border: rgba(74, 93, 79, 0.12);
+    --input: rgba(74, 93, 79, 0.15);
+    --ring: #4A5D4F;
+    --radius: 1rem;
+    /* Freshness colors */
+    --freshness-fresh: #4A5D4F;
+    --freshness-warning: #D4A373;
+    --freshness-danger: #BC4749;
+  }
+
+  .dark {
+    --background: #1A1D1B;
+    --foreground: #F9F9F7;
+    --card: rgba(45, 52, 54, 0.8);
+    --card-foreground: #F9F9F7;
+    --popover: rgba(26, 29, 27, 0.95);
+    --popover-foreground: #F9F9F7;
+    --primary: #A3B18A;
+    --primary-foreground: #1A1D1B;
+    --secondary: #4A5D4F;
+    --secondary-foreground: #F9F9F7;
+    --muted: rgba(163, 177, 138, 0.15);
+    --muted-foreground: #B2BEC3;
+    --accent: #D4A373;
+    --accent-foreground: #1A1D1B;
+    --destructive: #BC4749;
+    --destructive-foreground: #F9F9F7;
+    --border: rgba(163, 177, 138, 0.2);
+    --input: rgba(163, 177, 138, 0.15);
+    --ring: #A3B18A;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border/50;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    background-image: 
+      radial-gradient(at 40% 20%, rgba(163, 177, 138, 0.08) 0px, transparent 50%),
+      radial-gradient(at 80% 0%, rgba(212, 163, 115, 0.06) 0px, transparent 50%),
+      radial-gradient(at 0% 50%, rgba(74, 93, 79, 0.04) 0px, transparent 50%);
+    min-height: 100vh;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Glassmorphism utility */
+  .glass {
+    @apply backdrop-blur-xl bg-card/80;
+  }
+
+  /* Subtle paper texture overlay */
+  .paper-texture {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  }
+}
