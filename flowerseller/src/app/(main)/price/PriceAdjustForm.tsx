@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { applyBulkPriceAdjustment } from "@/lib/actions/price";
 import { useRouter } from "next/navigation";
+import { FormActions } from "@/components/ui/FormActions";
+import { btn } from "@/lib/ui-classes";
 
 type Category = { id: string; name: string };
 
@@ -37,24 +39,32 @@ export function PriceAdjustForm({ categories }: { categories: Category[] }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-6 text-text" noValidate aria-label="価格一括調整フォーム">
       <div>
-        <label className="block text-sm text-white/80 mb-1">調整率（%）</label>
+        <label htmlFor="price-adjust-value" className="block text-sm font-medium text-text mb-2">
+          調整率（%）
+        </label>
         <input
+          id="price-adjust-value"
           type="number"
           step={0.1}
           value={value}
           onChange={(e) => setValue(e.target.value)}
           placeholder="例: 10 で+10%、-5 で-5%"
-          className="w-full rounded-lg bg-white/10 border border-white/20 px-3 py-2 text-white placeholder:text-white/50"
+          className="w-full rounded-lg border border-border bg-base px-4 py-3 text-text placeholder:text-text-muted focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none"
+          aria-label="調整率（パーセント）"
         />
       </div>
       <div>
-        <label className="block text-sm text-white/80 mb-1">対象カテゴリ</label>
+        <label htmlFor="price-adjust-category" className="block text-sm font-medium text-text mb-2">
+          対象カテゴリ
+        </label>
         <select
+          id="price-adjust-category"
           value={categoryId}
           onChange={(e) => setCategoryId(e.target.value)}
-          className="w-full rounded-lg bg-white/10 border border-white/20 px-3 py-2 text-white"
+          className="w-full rounded-lg border border-border bg-base px-4 py-3 text-text focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none"
+          aria-label="対象カテゴリを選択"
         >
           <option value="">全商品</option>
           {categories.map((c) => (
@@ -64,14 +74,24 @@ export function PriceAdjustForm({ categories }: { categories: Category[] }) {
           ))}
         </select>
       </div>
-      {error && <p className="text-sm text-red-300">{error}</p>}
-      <button
-        type="submit"
-        disabled={loading}
-        className="rounded-2xl bg-white/25 px-6 py-4 text-lg font-semibold text-white hover:bg-white/35 disabled:opacity-50 border-2 border-white/25"
-      >
-        {loading ? "適用中…" : "一括価格を適用"}
-      </button>
+      {error && (
+        <p className="text-sm text-error font-medium" role="alert">
+          {error}
+        </p>
+      )}
+      <FormActions
+        primary={
+          <button
+            type="submit"
+            disabled={loading}
+            className={btn.primary}
+            aria-busy={loading}
+            aria-label={loading ? "適用中" : "一括価格を適用"}
+          >
+            {loading ? "適用中…" : "一括価格を適用"}
+          </button>
+        }
+      />
     </form>
   );
 }

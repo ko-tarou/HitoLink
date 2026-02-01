@@ -4,9 +4,11 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createSale } from "@/lib/actions/sales";
 import { formatYen } from "@/lib/utils";
-import { Plus, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import type { Product } from "@/types/database";
 import type { PaymentMethod } from "@/types/database";
+import { FormActions } from "@/components/ui/FormActions";
+import { btn } from "@/lib/ui-classes";
 
 type CartRow = { product: Product; quantity: number };
 
@@ -84,35 +86,44 @@ export function PosNewForm({ products }: { products: Product[] }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="rounded-xl bg-maroon-light/80 border border-white/15 p-4">
-        <h3 className="text-sm font-semibold text-white/90 mb-2">商品を追加</h3>
+    <form onSubmit={handleSubmit} className="space-y-6 text-text" noValidate aria-label="売上登録フォーム">
+      <section className="rounded-xl bg-base border border-border p-6" aria-labelledby="add-products-heading">
+        <h3 id="add-products-heading" className="text-base font-semibold text-text mb-3">
+          商品を追加
+        </h3>
         <div className="flex flex-wrap gap-2">
           {products.slice(0, 20).map((p) => (
             <button
               key={p.id}
               type="button"
               onClick={() => addToCart(p)}
-              className="rounded-lg bg-white/15 px-3 py-2 text-sm text-white hover:bg-white/25"
+              className="rounded-lg border-2 border-border bg-base-subtle px-4 py-2 text-sm text-text hover:bg-base-muted hover:border-primary/30 transition focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+              aria-label={`${p.name}（${formatYen(p.base_price)}）をカートに追加`}
             >
               {p.name} ({formatYen(p.base_price)})
             </button>
           ))}
         </div>
-      </div>
+      </section>
 
       {cart.length > 0 && (
-        <div className="rounded-xl bg-maroon-light/80 border border-white/15 p-4">
-          <h3 className="text-sm font-semibold text-white/90 mb-2">カート</h3>
-          <ul className="space-y-2">
+        <section className="rounded-xl bg-base border border-border p-6" aria-labelledby="cart-heading">
+          <h3 id="cart-heading" className="text-base font-semibold text-text mb-3">
+            カート
+          </h3>
+          <ul className="space-y-3" role="list">
             {cart.map((r) => (
               <li
                 key={r.product.id}
-                className="flex justify-between items-center gap-2"
+                className="flex justify-between items-center gap-4 text-text"
               >
-                <span className="text-white truncate">{r.product.name}</span>
-                <div className="flex items-center gap-2">
+                <span className="truncate font-medium">{r.product.name}</span>
+                <div className="flex items-center gap-2 shrink-0">
+                  <label htmlFor={`qty-${r.product.id}`} className="sr-only">
+                    {r.product.name}の数量
+                  </label>
                   <input
+                    id={`qty-${r.product.id}`}
                     type="number"
                     min={0.01}
                     step={0.01}
@@ -120,64 +131,83 @@ export function PosNewForm({ products }: { products: Product[] }) {
                     onChange={(e) =>
                       updateQty(r.product.id, Number(e.target.value) || 0)
                     }
-                    className="w-16 rounded bg-white/10 border border-white/20 px-2 py-1 text-white text-sm text-right"
+                    className="w-16 rounded-lg border border-border bg-base px-2 py-2 text-text text-sm text-right focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none"
+                    aria-label={`${r.product.name}の数量`}
                   />
-                  <span className="text-white/90 text-sm w-20 text-right">
+                  <span className="text-text-muted text-sm w-20 text-right">
                     {formatYen(Number(r.product.base_price) * r.quantity)}
                   </span>
                   <button
                     type="button"
                     onClick={() => removeFromCart(r.product.id)}
-                    className="p-1 text-white/70 hover:text-white"
+                    className="p-2 text-text-muted hover:text-error transition focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded"
+                    aria-label={`${r.product.name}をカートから削除`}
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <Trash2 className="w-4 h-4" aria-hidden />
                   </button>
                 </div>
               </li>
             ))}
           </ul>
-          <p className="mt-2 text-right font-semibold text-white">
+          <p className="mt-4 text-right font-semibold text-text text-lg">
             合計: {formatYen(total)}
           </p>
-        </div>
+        </section>
       )}
 
-      <div>
-        <label className="block text-sm text-white/80 mb-2">決済方法</label>
-        <div className="flex gap-2">
+      <fieldset>
+        <legend className="block text-sm font-medium text-text mb-3">
+          決済方法
+        </legend>
+        <div className="flex flex-wrap gap-4">
           {paymentMethods.map((pm) => (
-            <label key={pm.value} className="flex items-center gap-2 cursor-pointer">
+            <label
+              key={pm.value}
+              className="flex items-center gap-2 cursor-pointer text-text"
+            >
               <input
                 type="radio"
                 name="payment"
                 value={pm.value}
                 checked={paymentMethod === pm.value}
                 onChange={() => setPaymentMethod(pm.value)}
-                className="rounded-full border-white/30 text-maroon"
+                className="rounded-full border-border text-primary focus:ring-2 focus:ring-primary"
+                aria-label={pm.label}
               />
-              <span className="text-white text-sm">{pm.label}</span>
+              <span className="text-sm">{pm.label}</span>
             </label>
           ))}
         </div>
-      </div>
+      </fieldset>
 
-      {error && <p className="text-sm text-red-300">{error}</p>}
-      <div className="flex gap-3">
-        <button
-          type="submit"
-          disabled={loading || cart.length === 0}
-          className="rounded-lg bg-white/25 px-4 py-2 text-white font-medium hover:bg-white/35 disabled:opacity-50"
-        >
-          {loading ? "登録中…" : "売上を計上"}
-        </button>
-        <button
-          type="button"
-          onClick={() => router.back()}
-          className="rounded-lg bg-white/10 px-4 py-2 text-white font-medium hover:bg-white/20"
-        >
-          キャンセル
-        </button>
-      </div>
+      {error && (
+        <p className="text-sm text-error font-medium" role="alert">
+          {error}
+        </p>
+      )}
+      <FormActions
+        secondary={
+          <button
+            type="button"
+            onClick={() => router.back()}
+            className={btn.secondary}
+            aria-label="キャンセルして戻る"
+          >
+            キャンセル
+          </button>
+        }
+        primary={
+          <button
+            type="submit"
+            disabled={loading || cart.length === 0}
+            className={btn.primary}
+            aria-busy={loading}
+            aria-label={loading ? "登録中" : "売上を計上"}
+          >
+            {loading ? "登録中…" : "売上を計上"}
+          </button>
+        }
+      />
     </form>
   );
 }

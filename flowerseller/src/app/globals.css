@@ -2,15 +2,85 @@
 @tailwind components;
 @tailwind utilities;
 
+/* デジタル庁デザインシステム準拠: デザイントークン（WCAG 2.1 AA） */
 :root {
-  --maroon: #b91c3c;
-  --maroon-light: #e11d48;
-  --maroon-dark: #9f1239;
-  --foreground: #ffffff;
+  --color-base: #ffffff;
+  --color-base-subtle: #f5f5f5;
+  --color-text: #1a1a1a;
+  --color-text-secondary: #333333;
+  --color-text-muted: #5c5c5c;
+  --color-primary: #0067c0;
+  --color-primary-hover: #004d8e;
+  --color-border: #d8d8d8;
+  --color-error: #d13438;
+  --focus-ring: 2px solid var(--color-primary);
+  --focus-offset: 2px;
 }
 
 body {
-  color: var(--foreground);
-  background: var(--maroon);
+  font-family: var(--font-noto-sans-jp), sans-serif;
+  color: var(--color-text);
+  background-color: var(--color-base);
   min-height: 100vh;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 白/薄い背景上のテキストは必ず濃い色（継承で上書きされないように） */
+main,
+form {
+  color: var(--color-text);
+}
+
+/* ホームのタイル文字色（白背景で濃い文字を保証） */
+main [role="navigation"][aria-label="メインメニュー"] a {
+  color: #1a1a1a;
+}
+main [role="navigation"][aria-label="メインメニュー"] a span {
+  color: inherit;
+}
+main [role="navigation"][aria-label="メインメニュー"] [role="status"] {
+  color: #333333;
+}
+
+/* フォーカスインジケータ: 消さずに視認しやすく（キーボード操作・A11y） */
+*:focus {
+  outline: none;
+}
+
+*:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+
+/* ボタン・リンクは ring でフォーカス表現（Tailwind と併用） */
+a:focus-visible,
+button:focus-visible,
+[type="button"]:focus-visible,
+[type="submit"]:focus-visible,
+[type="search"]:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+
+/* 見出しのジャンプ率（階層構造） */
+h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.5;
 }

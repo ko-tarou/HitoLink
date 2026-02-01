@@ -2,6 +2,7 @@ import { getCategories } from "@/lib/actions/categories";
 import { getPriceAdjustmentHistory } from "@/lib/actions/price";
 import { formatDateTime } from "@/lib/utils";
 import { PriceAdjustForm } from "./PriceAdjustForm";
+import { PageHeader } from "@/components/ui/PageHeader";
 
 type HistoryItem = {
   id: string;
@@ -19,32 +20,34 @@ export default async function PricePage() {
   const historyList = history as HistoryItem[];
 
   return (
-    <div className="p-4 max-w-2xl mx-auto">
-      <h2 className="text-lg font-bold text-white mb-4">価格管理（一括調整）</h2>
+    <div className="mx-auto px-6 py-6 max-w-2xl">
+      <PageHeader title="価格管理（一括調整）" />
 
       <PriceAdjustForm categories={categories} />
 
-      <section className="mt-6">
-        <h3 className="text-sm font-semibold text-white/90 mb-2">調整履歴</h3>
-        <div className="rounded-xl bg-maroon-light/80 border border-white/15 overflow-hidden">
-          <ul className="divide-y divide-white/10">
+      <section className="mt-8" aria-labelledby="price-history-heading">
+        <h3 id="price-history-heading" className="text-base font-semibold text-text mb-3">
+          調整履歴
+        </h3>
+        <div className="rounded-xl bg-base border border-border overflow-hidden">
+          <ul className="divide-y divide-border" role="list">
             {historyList.map((h) => (
-              <li key={h.id} className="px-4 py-3 flex justify-between items-center">
+              <li key={h.id} className="px-6 py-4 flex justify-between items-center text-text">
                 <div>
-                  <span className="text-white font-medium">
+                  <span className="font-medium">
                     {h.value > 0 ? `+${h.value}%` : `${h.value}%`}
                   </span>
-                  <span className="ml-2 text-white/60 text-sm">
+                  <span className="ml-2 text-text-muted text-sm">
                     {h.categories?.name ?? "全商品"}
                   </span>
                 </div>
-                <span className="text-white/80 text-sm">
+                <span className="text-text-muted text-sm">
                   {formatDateTime(h.created_at)}
                 </span>
               </li>
             ))}
             {historyList.length === 0 && (
-              <li className="px-4 py-6 text-white/60 text-center">
+              <li className="px-6 py-8 text-text-muted text-center" role="status">
                 調整履歴がありません
               </li>
             )}

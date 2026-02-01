@@ -8,7 +8,6 @@ import {
   Tag,
   Droplets,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 const tiles = [
   {
@@ -48,6 +47,9 @@ const tiles = [
   },
 ];
 
+const tileBase =
+  "flex flex-col items-center justify-center rounded-xl bg-base border-2 border-border text-foreground shadow-sm hover:bg-base-muted hover:border-primary/30 transition focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2";
+
 export function HomeGrid() {
   const now = new Date();
   const dateStr = now.toLocaleDateString("ja-JP", {
@@ -66,55 +68,68 @@ export function HomeGrid() {
   const Icon2 = tiles[2].icon;
   const Icon3 = tiles[3].icon;
   const Icon4 = tiles[4].icon;
+
   return (
-    <div className="grid grid-cols-2 gap-4 p-4 max-w-lg mx-auto">
-      {/* Row 1: 在庫管理(大) | 入荷・売上(縦2分割) - ボタン2回り大きく */}
+    <div
+      className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-2xl mx-auto"
+      role="navigation"
+      aria-label="メインメニュー"
+    >
+      {/* 在庫管理（大タイル・左2列2行） */}
       <Link
         href={tiles[0].href}
-        className={cn(
-          "flex flex-col items-center justify-center rounded-2xl bg-white/15 border-2 border-white/30 p-8 text-white shadow-xl active:scale-[0.98] transition",
-          "row-span-2 min-h-[200px]"
-        )}
+        className={`${tileBase} col-span-1 md:col-span-2 row-span-2 min-h-[160px] md:min-h-[220px] p-6`}
+        aria-label={`${tiles[0].label}、${tiles[0].sublabel}`}
       >
-        <Icon0 className="w-16 h-16 mb-3" strokeWidth={1.5} />
-        <span className="font-bold text-xl">{tiles[0].label}</span>
-        <span className="text-base text-white/90 mt-1">{tiles[0].sublabel}</span>
+        <Icon0 className="w-12 h-12 md:w-16 md:h-16 mb-3 text-primary shrink-0" strokeWidth={1.5} aria-hidden />
+        <span className="font-bold text-lg md:text-xl text-center text-foreground">{tiles[0].label}</span>
+        <span className="text-base text-foreground-secondary mt-1 text-center">{tiles[0].sublabel}</span>
       </Link>
+
+      {/* 入荷・売上（1行目） */}
       <Link
         href={tiles[1].href}
-        className="flex flex-col items-center justify-center rounded-2xl bg-white/15 border-2 border-white/30 p-6 text-white shadow-xl active:scale-[0.98] transition min-h-[96px]"
+        className={`${tileBase} min-h-[120px] md:min-h-[100px] p-4`}
+        aria-label={`${tiles[1].label}、${tiles[1].sublabel}`}
       >
-        <Icon1 className="w-12 h-12 mb-2" strokeWidth={1.5} />
-        <span className="font-semibold text-lg">{tiles[1].label}</span>
+        <Icon1 className="w-10 h-10 md:w-11 md:h-11 mb-2 text-primary shrink-0" strokeWidth={1.5} aria-hidden />
+        <span className="font-semibold text-base text-center text-foreground">{tiles[1].label}</span>
       </Link>
       <Link
         href={tiles[2].href}
-        className="flex flex-col items-center justify-center rounded-2xl bg-white/15 border-2 border-white/30 p-6 text-white shadow-xl active:scale-[0.98] transition min-h-[96px]"
+        className={`${tileBase} min-h-[120px] md:min-h-[100px] p-4`}
+        aria-label={`${tiles[2].label}、${tiles[2].sublabel}`}
       >
-        <Icon2 className="w-12 h-12 mb-2" strokeWidth={1.5} />
-        <span className="font-semibold text-lg">{tiles[2].label}</span>
+        <Icon2 className="w-10 h-10 md:w-11 md:h-11 mb-2 text-primary shrink-0" strokeWidth={1.5} aria-hidden />
+        <span className="font-semibold text-base text-center text-foreground">{tiles[2].label}</span>
       </Link>
 
-      {/* Row 2: 価格管理 | 鮮度管理 */}
+      {/* 価格・鮮度（2行目） */}
       <Link
         href={tiles[3].href}
-        className="flex flex-col items-center justify-center rounded-2xl bg-white/15 border-2 border-white/30 p-7 text-white shadow-xl active:scale-[0.98] transition min-h-[140px]"
+        className={`${tileBase} min-h-[120px] md:min-h-[100px] p-4`}
+        aria-label={`${tiles[3].label}、${tiles[3].sublabel}`}
       >
-        <Icon3 className="w-14 h-14 mb-3" strokeWidth={1.5} />
-        <span className="font-bold text-lg">{tiles[3].label}</span>
-        <span className="text-sm text-white/90 mt-0.5">{tiles[3].sublabel}</span>
+        <Icon3 className="w-10 h-10 md:w-11 md:h-11 mb-2 text-primary shrink-0" strokeWidth={1.5} aria-hidden />
+        <span className="font-semibold text-base text-center text-foreground">{tiles[3].label}</span>
+        <span className="text-sm text-foreground-secondary mt-0.5 text-center block">{tiles[3].sublabel}</span>
       </Link>
       <Link
         href={tiles[4].href}
-        className="flex flex-col items-center justify-center rounded-2xl bg-white/15 border-2 border-white/30 p-7 text-white shadow-xl active:scale-[0.98] transition min-h-[140px]"
+        className={`${tileBase} min-h-[120px] md:min-h-[100px] p-4`}
+        aria-label={`${tiles[4].label}、${tiles[4].sublabel}`}
       >
-        <Icon4 className="w-14 h-14 mb-3" strokeWidth={1.5} />
-        <span className="font-bold text-lg">{tiles[4].label}</span>
-        <span className="text-sm text-white/90 mt-0.5">{tiles[4].sublabel}</span>
+        <Icon4 className="w-10 h-10 md:w-11 md:h-11 mb-2 text-primary shrink-0" strokeWidth={1.5} aria-hidden />
+        <span className="font-semibold text-base text-center text-foreground">{tiles[4].label}</span>
+        <span className="text-sm text-foreground-secondary mt-0.5 text-center block">{tiles[4].sublabel}</span>
       </Link>
 
-      {/* ページ番号の代わり: 日付・時刻 */}
-      <div className="col-span-2 flex justify-center items-center gap-4 py-4 text-white/95 text-lg">
+      {/* 日付・時刻（3行目・全幅） */}
+      <div
+        className="col-span-2 md:col-span-4 flex justify-center items-center gap-4 py-6 text-foreground-secondary text-base"
+        role="status"
+        aria-live="polite"
+      >
         <time dateTime={now.toISOString()} className="font-medium">
           {dateStr}
         </time>

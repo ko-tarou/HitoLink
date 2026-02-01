@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { createWateringRecord } from "@/lib/actions/watering";
 import { useRouter } from "next/navigation";
+import { FormActions } from "@/components/ui/FormActions";
+import { btn } from "@/lib/ui-classes";
 
 type Batch = {
   id: string;
@@ -42,13 +44,17 @@ export function WateringForm({ batches }: { batches: Batch[] }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mt-4 space-y-3">
+    <form onSubmit={handleSubmit} className="mt-6 space-y-4 text-text" noValidate aria-label="水やり記録フォーム">
       <div>
-        <label className="block text-sm text-white/80 mb-1">水やりした在庫</label>
+        <label htmlFor="watering-batch" className="block text-sm font-medium text-text mb-2">
+          水やりした在庫
+        </label>
         <select
+          id="watering-batch"
           value={batchId}
           onChange={(e) => setBatchId(e.target.value)}
-          className="w-full rounded-lg bg-white/10 border border-white/20 px-3 py-2 text-white"
+          className="w-full rounded-lg border border-border bg-base px-4 py-3 text-text focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none"
+          aria-label="水やりした在庫バッチを選択"
         >
           <option value="">選択</option>
           {batches.map((b) => (
@@ -59,25 +65,39 @@ export function WateringForm({ batches }: { batches: Batch[] }) {
         </select>
       </div>
       <div>
-        <label className="block text-sm text-white/80 mb-1">次回水やり（日数）</label>
+        <label htmlFor="watering-next-days" className="block text-sm font-medium text-text mb-2">
+          次回水やり（日数）
+        </label>
         <select
+          id="watering-next-days"
           value={nextDays}
           onChange={(e) => setNextDays(e.target.value)}
-          className="w-full rounded-lg bg-white/10 border border-white/20 px-3 py-2 text-white"
+          className="w-full rounded-lg border border-border bg-base px-4 py-3 text-text focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none"
+          aria-label="次回水やりまでの日数"
         >
           <option value="1">1日後</option>
           <option value="2">2日後</option>
           <option value="3">3日後</option>
         </select>
       </div>
-      {error && <p className="text-sm text-red-300">{error}</p>}
-      <button
-        type="submit"
-        disabled={loading}
-        className="rounded-2xl bg-white/25 px-6 py-4 text-lg font-semibold text-white hover:bg-white/35 disabled:opacity-50 border-2 border-white/25"
-      >
-        {loading ? "登録中…" : "水やりを記録"}
-      </button>
+      {error && (
+        <p className="text-sm text-error font-medium" role="alert">
+          {error}
+        </p>
+      )}
+      <FormActions
+        primary={
+          <button
+            type="submit"
+            disabled={loading}
+            className={btn.primary}
+            aria-busy={loading}
+            aria-label={loading ? "登録中" : "水やりを記録"}
+          >
+            {loading ? "登録中…" : "水やりを記録"}
+          </button>
+        }
+      />
     </form>
   );
 }

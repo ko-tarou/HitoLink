@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createProduct } from "@/lib/actions/products";
 import type { ProductType } from "@/types/database";
+import { FormActions } from "@/components/ui/FormActions";
+import { btn } from "@/lib/ui-classes";
 
 type CategoryOption = { id: string; name: string };
 
@@ -56,23 +58,33 @@ export function ProductNewForm({ categories }: { categories: CategoryOption[] })
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-6 text-text" noValidate aria-label="商品登録フォーム">
       <div>
-        <label className="block text-sm text-white/80 mb-1">商品名 *</label>
+        <label htmlFor="product-name" className="block text-sm font-medium text-text mb-2">
+          商品名 <span className="text-error" aria-hidden>*</span>
+        </label>
         <input
+          id="product-name"
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="w-full rounded-lg bg-white/10 border border-white/20 px-3 py-2 text-white placeholder:text-white/50"
+          className="w-full rounded-lg border border-border bg-base px-4 py-3 text-text placeholder:text-text-muted focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none"
           placeholder="例: バラ 10本束"
+          required
+          aria-required="true"
+          aria-invalid={error ? "true" : undefined}
         />
       </div>
       <div>
-        <label className="block text-sm text-white/80 mb-1">種別</label>
+        <label htmlFor="product-type" className="block text-sm font-medium text-text mb-2">
+          種別
+        </label>
         <select
+          id="product-type"
           value={type}
           onChange={(e) => setType(e.target.value as ProductType)}
-          className="w-full rounded-lg bg-white/10 border border-white/20 px-3 py-2 text-white"
+          className="w-full rounded-lg border border-border bg-base px-4 py-3 text-text focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none"
+          aria-label="商品の種別"
         >
           {types.map((t) => (
             <option key={t.value} value={t.value}>
@@ -82,11 +94,15 @@ export function ProductNewForm({ categories }: { categories: CategoryOption[] })
         </select>
       </div>
       <div>
-        <label className="block text-sm text-white/80 mb-1">カテゴリ</label>
+        <label htmlFor="product-category" className="block text-sm font-medium text-text mb-2">
+          カテゴリ
+        </label>
         <select
+          id="product-category"
           value={categoryId}
           onChange={(e) => setCategoryId(e.target.value)}
-          className="w-full rounded-lg bg-white/10 border border-white/20 px-3 py-2 text-white"
+          className="w-full rounded-lg border border-border bg-base px-4 py-3 text-text focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none"
+          aria-label="カテゴリを選択"
         >
           <option value="">未選択</option>
           {categories.map((c) => (
@@ -97,55 +113,79 @@ export function ProductNewForm({ categories }: { categories: CategoryOption[] })
         </select>
       </div>
       <div>
-        <label className="block text-sm text-white/80 mb-1">販売価格（円） *</label>
+        <label htmlFor="product-price" className="block text-sm font-medium text-text mb-2">
+          販売価格（円） <span className="text-error" aria-hidden>*</span>
+        </label>
         <input
+          id="product-price"
           type="number"
           min={0}
           step={1}
           value={basePrice}
           onChange={(e) => setBasePrice(e.target.value)}
-          className="w-full rounded-lg bg-white/10 border border-white/20 px-3 py-2 text-white placeholder:text-white/50"
+          className="w-full rounded-lg border border-border bg-base px-4 py-3 text-text placeholder:text-text-muted focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none"
           placeholder="0"
+          required
+          aria-required="true"
         />
       </div>
       <div>
-        <label className="block text-sm text-white/80 mb-1">説明</label>
+        <label htmlFor="product-description" className="block text-sm font-medium text-text mb-2">
+          説明
+        </label>
         <textarea
+          id="product-description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          className="w-full rounded-lg bg-white/10 border border-white/20 px-3 py-2 text-white placeholder:text-white/50"
-          rows={2}
+          className="w-full rounded-lg border border-border bg-base px-4 py-3 text-text placeholder:text-text-muted focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none"
+          rows={3}
           placeholder="任意"
+          aria-label="商品の説明"
         />
       </div>
       <div>
-        <label className="block text-sm text-white/80 mb-1">廃棄予定までの日数（鮮度）</label>
+        <label htmlFor="product-disposal-days" className="block text-sm font-medium text-text mb-2">
+          廃棄予定までの日数（鮮度）
+        </label>
         <input
+          id="product-disposal-days"
           type="number"
           min={1}
           value={disposalDays}
           onChange={(e) => setDisposalDays(e.target.value)}
-          className="w-full rounded-lg bg-white/10 border border-white/20 px-3 py-2 text-white placeholder:text-white/50"
+          className="w-full rounded-lg border border-border bg-base px-4 py-3 text-text placeholder:text-text-muted focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none"
           placeholder="未設定"
+          aria-label="廃棄予定までの日数"
         />
       </div>
-      {error && <p className="text-sm text-red-300">{error}</p>}
-      <div className="flex gap-3">
-        <button
-          type="submit"
-          disabled={loading}
-          className="rounded-lg bg-white/25 px-4 py-2 text-white font-medium hover:bg-white/35 disabled:opacity-50"
-        >
-          {loading ? "登録中…" : "登録"}
-        </button>
-        <button
-          type="button"
-          onClick={() => router.back()}
-          className="rounded-lg bg-white/10 px-4 py-2 text-white font-medium hover:bg-white/20"
-        >
-          キャンセル
-        </button>
-      </div>
+      {error && (
+        <p className="text-sm text-error font-medium" role="alert">
+          {error}
+        </p>
+      )}
+      <FormActions
+        secondary={
+          <button
+            type="button"
+            onClick={() => router.back()}
+            className={btn.secondary}
+            aria-label="キャンセルして戻る"
+          >
+            キャンセル
+          </button>
+        }
+        primary={
+          <button
+            type="submit"
+            disabled={loading}
+            className={btn.primary}
+            aria-busy={loading}
+            aria-label={loading ? "登録中" : "登録"}
+          >
+            {loading ? "登録中…" : "登録"}
+          </button>
+        }
+      />
     </form>
   );
 }

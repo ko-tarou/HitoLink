@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { btn } from "@/lib/ui-classes";
 
 export default function MainLayout({
   children,
@@ -7,18 +8,18 @@ export default function MainLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-maroon flex flex-col">
-      <header className="flex items-center gap-3 px-4 py-3 border-b border-white/20">
+    <div className="min-h-screen bg-base-subtle flex flex-col text-text">
+      <header className="flex items-center gap-4 px-6 py-4 border-b border-border bg-base shrink-0 text-text">
         <Link
           href="/"
-          className="p-3 rounded-xl bg-white/15 text-white hover:bg-white/25 transition flex items-center justify-center border-2 border-white/25"
-          aria-label="ホームへ"
+          className={btn.iconBack}
+          aria-label="ホームへ戻る"
         >
-          <ArrowLeft className="w-8 h-8" />
+          <ArrowLeft className="w-6 h-6" aria-hidden />
         </Link>
-        <span className="text-white font-bold text-lg">Flower Seller</span>
+        <span className="font-bold text-lg">Flower Seller</span>
       </header>
-      <main className="flex-1 overflow-auto">{children}</main>
+      <main className="flex-1 overflow-auto text-text">{children}</main>
     </div>
   );
 }
