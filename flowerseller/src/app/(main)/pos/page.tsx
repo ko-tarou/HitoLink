@@ -1,9 +1,9 @@
-import Link from "next/link";
 import { getSales } from "@/lib/actions/sales";
+import { getProducts } from "@/lib/actions/products";
+import { getCategories } from "@/lib/actions/categories";
 import { formatYen, formatDateTime } from "@/lib/utils";
-import { Receipt } from "lucide-react";
 import { pageContainer } from "@/lib/ui-classes";
-import { btn } from "@/lib/ui-classes";
+import { SalesGraph } from "./SalesGraph";
 
 const paymentLabel: Record<string, string> = {
   cash: "現金",
@@ -11,48 +11,108 @@ const paymentLabel: Record<string, string> = {
   paypay: "PayPay",
 };
 
+type SaleItem = {
+  id: string;
+  product_id: string;
+  quantity: number;
+  unit_price: number;
+  subtotal: number;
+  products?: { name: string } | null;
+};
+
+type Sale = {
+  id: string;
+  total_amount: number;
+  payment_method: string;
+  created_at: string;
+  sale_items?: SaleItem[];
+};
+
+function aggregateSalesByDay(sales: Sale[], days = 14): { date: string; amount: number }[] {
+  const map = new Map<string, number>();
+  const today = new Date();
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const key = d.toISOString().slice(0, 10);
+    map.set(key, 0);
+  }
+  for (const s of sales) {
+    const key = new Date(s.created_at).toISOString().slice(0, 10);
+    if (map.has(key)) {
+      map.set(key, (map.get(key) ?? 0) + s.total_amount);
+    }
+  }
+  return Array.from(map.entries())
+    .sort((a, b) => a[0].localeCompare(b[0]))
+    .map(([date, amount]) => ({ date, amount }));
+}
+
+function isToday(isoDateStr: string): boolean {
+  const d = new Date(isoDateStr);
+  const today = new Date();
+  return d.getFullYear() === today.getFullYear() && d.getMonth() === today.getMonth() && d.getDate() === today.getDate();
+}
+
 export default async function PosPage() {
-  const sales = await getSales();
+  const [sales, products, categories] = await Promise.all([
+    getSales(),
+    getProducts({ sortBy: "name", order: "asc" }),
+    getCategories(),
+  ]);
+  const salesList = sales as Sale[];
+  const graphData = aggregateSalesByDay(salesList);
+  const todaySales = salesList.filter((s) => isToday(s.created_at));
 
   return (
     <div className={pageContainer}>
-      <div className="flex justify-end mb-4">
-        <Link
-          href="/pos/new"
-          className={btn.primary}
-          aria-label="売上を新規登録"
-        >
-          <Receipt className="w-6 h-6" aria-hidden /> 売上登録
-        </Link>
-      </div>
+      <section className="mb-8" aria-labelledby="sales-graph-heading">
+        <SalesGraph
+          data={graphData}
+          sales={salesList}
+          products={products.map((p) => ({ id: p.id, name: p.name, category_id: p.category_id ?? null }))}
+          categories={categories.map((c) => ({ id: c.id, name: c.name }))}
+        />
+      </section>
 
-      <section aria-labelledby="sales-history-heading">
-        <h3 id="sales-history-heading" className="text-base font-semibold text-text mb-3">
-          売上履歴
+      <section aria-labelledby="sales-today-heading">
+        <h3 id="sales-today-heading" className="text-base font-semibold text-text mb-3">
+          本日の売り上げ
         </h3>
         <div className="rounded-xl bg-base border border-border overflow-hidden">
           <ul className="divide-y divide-border" role="list">
-            {(sales as { id: string; total_amount: number; payment_method: string; created_at: string }[]).map((s) => (
-              <li
-                key={s.id}
-                className="px-6 py-4 flex justify-between items-center text-text"
-              >
-                <div>
-                  <span className="font-medium text-base">
-                    {formatDateTime(s.created_at)}
-                  </span>
-                  <span className="ml-2 text-text-muted text-sm">
-                    {paymentLabel[s.payment_method] ?? s.payment_method}
+            {todaySales.map((s) => (
+              <li key={s.id} className="px-6 py-4 text-text">
+                <div className="flex justify-between items-start gap-4">
+                  <div className="min-w-0">
+                    <span className="font-medium text-base block">
+                      {formatDateTime(s.created_at)}
+                    </span>
+                    <span
+                      className="inline-block mt-1 px-2.5 py-1 rounded-md text-sm font-medium bg-base-subtle text-text border border-border"
+                      aria-label={`決済方法: ${paymentLabel[s.payment_method] ?? s.payment_method}`}
+                    >
+                      {paymentLabel[s.payment_method] ?? s.payment_method}
+                    </span>
+                  </div>
+                  <span className="font-bold text-lg text-text shrink-0">
+                    {formatYen(s.total_amount)}
                   </span>
                 </div>
-                <span className="font-bold text-lg text-text">
-                  {formatYen(s.total_amount)}
-                </span>
+                {s.sale_items && s.sale_items.length > 0 && (
+                  <ul className="mt-3 pl-0 list-none text-sm text-text-muted space-y-1" role="list">
+                    {s.sale_items.map((i) => (
+                      <li key={i.id}>
+                        {i.products?.name ?? "商品"} × {i.quantity} — {formatYen(i.subtotal)}
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </li>
             ))}
-            {sales.length === 0 && (
+            {todaySales.length === 0 && (
               <li className="px-6 py-8 text-text-muted text-center text-base" role="status">
-                売上履歴がありません
+                本日の売り上げはありません
               </li>
             )}
           </ul>
