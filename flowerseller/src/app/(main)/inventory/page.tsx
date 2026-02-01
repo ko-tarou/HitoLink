@@ -76,6 +76,8 @@ export default async function InventoryPage({
                   <th scope="col" className="px-4 py-3 text-right border-b border-border font-semibold text-text">
                     価格
                   </th>
+                  <th scope="col" className="px-4 py-3 w-14 border-b border-border" aria-label="削除">
+                  </th>
                 </tr>
               </thead>
               <Suspense fallback={null}>

@@ -11,6 +11,9 @@ export const btn = {
   /** ヘッダー内の戻るアイコン用（押しやすいサイズ） */
   iconBack:
     "inline-flex items-center justify-center p-4 rounded-xl bg-base-subtle text-text border-2 border-border hover:bg-base-muted transition focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 min-w-[56px] min-h-[56px]",
+  /** 危険な操作（削除など）。デジタル庁のアウトラインボタン：外周とラベルがエラー色・背景は白で視認性確保 */
+  danger:
+    "inline-flex items-center justify-center gap-2 rounded-lg border-2 border-error bg-base text-error px-6 py-3 text-base font-bold hover:bg-error-light disabled:opacity-50 transition focus-visible:ring-2 focus-visible:ring-error focus-visible:ring-offset-2 min-h-[48px]",
 } as const;
 
 /** ページコンテナ（一覧・詳細） */
