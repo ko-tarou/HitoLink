@@ -1,5 +1,5 @@
 -- Flower Seller デモデータ（schema 適用後に実行）
--- 実行例（Docker の Postgres が 5433 の場合）:
+-- 実行例（Docker の Postgres が 5434 の場合）:
 --   プロジェクトルートで: docker-compose exec -T postgres psql -U flowerseller -d flowerseller < backend/seed.sql
 
 -- デモ用ユーザー（価格調整履歴の created_by 用。パスワードは "demo"）

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect, useMemo } from "react";
+import { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import { formatYen, formatDate, formatDateTime } from "@/lib/utils";
 import { selectBase } from "@/lib/ui-classes";
 
@@ -91,6 +91,52 @@ export function SalesGraph({ data, sales, products, categories }: Props) {
   const [productId, setProductId] = useState<string>("");
   const [tooltip, setTooltip] = useState<{ date: string; amount: number; x: number; y: number } | null>(null);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [dropdownRevealed, setDropdownRevealed] = useState(false);
+  const [closing, setClosing] = useState(false);
+  const [slotCollapsing, setSlotCollapsing] = useState(false);
+  const closingFromRef = useRef<GraphMode>("all");
+
+  useEffect(() => {
+    if (mode === "category" || mode === "product") {
+      setClosing(false);
+      setSlotCollapsing(false);
+      setDropdownRevealed(false);
+      const id = requestAnimationFrame(() => {
+        requestAnimationFrame(() => setDropdownRevealed(true));
+      });
+      return () => cancelAnimationFrame(id);
+    }
+    if (mode === "all" && (closingFromRef.current === "category" || closingFromRef.current === "product")) {
+      setDropdownRevealed(false);
+      const t1 = setTimeout(() => {
+        setSlotCollapsing(true);
+      }, 200);
+      const t2 = setTimeout(() => {
+        setClosing(false);
+        setSlotCollapsing(false);
+        closingFromRef.current = "all";
+      }, 200 + 300);
+      return () => {
+        clearTimeout(t1);
+        clearTimeout(t2);
+      };
+    }
+    setDropdownRevealed(false);
+    setClosing(false);
+    setSlotCollapsing(false);
+  }, [mode]);
+
+  const handleModeChange = useCallback((next: GraphMode) => {
+    if (next === "all" && (mode === "category" || mode === "product")) {
+      closingFromRef.current = mode;
+      setClosing(true);
+      setDropdownRevealed(false);
+      setMode("all");
+    } else {
+      closingFromRef.current = "all";
+      setMode(next);
+    }
+  }, [mode]);
 
   const productByCategory = useMemo(() => {
     const m = new Map<string, string>();
@@ -132,12 +178,16 @@ export function SalesGraph({ data, sales, products, categories }: Props) {
   return (
     <>
       <div className="rounded-xl bg-base border border-border overflow-hidden">
-        <div className="px-6 py-4 border-b border-border flex flex-wrap items-center justify-between gap-3">
+        <div className="px-6 py-5 border-b border-border flex flex-wrap items-center justify-between gap-4 min-h-[64px]">
           <h3 id="sales-graph-heading" className="text-base font-semibold text-text m-0">
             売上グラフ
           </h3>
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="flex rounded-lg border-2 border-border overflow-hidden" role="tablist" aria-label="グラフの表示範囲">
+          <div className="flex items-center gap-2 min-h-[48px]">
+            <div
+              className="flex rounded-lg border-2 border-border overflow-hidden transition-[box-shadow] duration-200"
+              role="tablist"
+              aria-label="グラフの表示範囲"
+            >
               {[
                 { value: "all" as const, label: "全ての商品" },
                 { value: "category" as const, label: "カテゴリ" },
@@ -150,8 +200,8 @@ export function SalesGraph({ data, sales, products, categories }: Props) {
                   aria-selected={mode === t.value}
                   aria-controls="sales-graph-panel"
                   id={`sales-tab-${t.value}`}
-                  onClick={() => setMode(t.value)}
-                  className={`px-3 py-2 text-sm font-medium transition shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
+                  onClick={() => handleModeChange(t.value)}
+                  className={`px-3 py-2 text-sm font-medium transition-all duration-200 shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
                     mode === t.value
                       ? "bg-primary text-white border-primary"
                       : "bg-base text-text border-transparent hover:bg-base-subtle"
@@ -161,36 +211,51 @@ export function SalesGraph({ data, sales, products, categories }: Props) {
                 </button>
               ))}
             </div>
-            {mode === "category" && (
-              <select
-                aria-label="カテゴリを選択"
-                value={categoryId}
-                onChange={(e) => setCategoryId(e.target.value)}
-                className={`${selectBase} w-auto min-w-[120px] text-sm py-2`}
+            <div
+              className={`overflow-hidden transition-[width,opacity] duration-300 ease-out ${
+                mode === "all" && !closing && !slotCollapsing
+                  ? "w-0 opacity-0"
+                  : "w-[180px] opacity-100"
+              }`}
+              aria-hidden={mode === "all" && !closing && !slotCollapsing}
+            >
+              <div
+                className={`pt-0.5 transition-all duration-200 ease-out ${
+                  dropdownRevealed ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"
+                }`}
               >
-                <option value="">選択してください</option>
-                {categories.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                  </option>
-                ))}
-              </select>
-            )}
-            {mode === "product" && (
-              <select
-                aria-label="商品を選択"
-                value={productId}
-                onChange={(e) => setProductId(e.target.value)}
-                className={`${selectBase} w-auto min-w-[140px] text-sm py-2`}
-              >
-                <option value="">選択してください</option>
-                {products.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.name}
-                  </option>
-                ))}
-              </select>
-            )}
+                {(mode === "category" || (closing && closingFromRef.current === "category")) && (
+                  <select
+                    aria-label="カテゴリを選択"
+                    value={categoryId}
+                    onChange={(e) => setCategoryId(e.target.value)}
+                    className={`${selectBase} w-full min-w-[120px] text-sm py-2`}
+                  >
+                    <option value="">選択してください</option>
+                    {categories.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name}
+                      </option>
+                    ))}
+                  </select>
+                )}
+                {(mode === "product" || (closing && closingFromRef.current === "product")) && (
+                  <select
+                    aria-label="商品を選択"
+                    value={productId}
+                    onChange={(e) => setProductId(e.target.value)}
+                    className={`${selectBase} w-full min-w-[140px] text-sm py-2`}
+                  >
+                    <option value="">選択してください</option>
+                    {products.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.name}
+                      </option>
+                    ))}
+                  </select>
+                )}
+              </div>
+            </div>
           </div>
         </div>
         <div id="sales-graph-panel" className="px-6 py-4 relative" role="tabpanel" aria-labelledby="sales-graph-heading">

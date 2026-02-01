@@ -6,7 +6,7 @@
 
 **事前に Docker Desktop を起動しておいてください。**
 
-プロジェクトルート（`flowerseller` の直下）で、次の順に実行します。
+プロジェクトルート（`flowerseller` の直下）で、次の順に実行します。**別のプロジェクトで PostgreSQL を使っていても、このプロジェクトはポート 5434 を使うので競合しません。**
 
 ### 1. PostgreSQL を Docker で起動
 
@@ -39,15 +39,20 @@ docker-compose exec -T postgres psql -U flowerseller -d flowerseller < backend/s
 
 ### 3. Go バックエンドを起動（ターミナル1）
 
-Docker の Postgres は **ポート 5433** で動いています（ローカルの 5432 と競合しないため）。
+Docker の Postgres は **ポート 5434** で動いています（他プロジェクトの Postgres と競合しないため）。
 
 ```bash
 cd backend
 go mod tidy   # 初回のみ
-DATABASE_URL="postgres://flowerseller:flowerseller@localhost:5433/flowerseller?sslmode=disable" go run .
+DATABASE_URL="postgres://flowerseller:flowerseller@localhost:5434/flowerseller?sslmode=disable" go run .
 ```
 
+※ すでに `backend` にいる場合は `cd backend` は不要です。
+
 `server listening on :8080` と出れば OK です。
+
+**「connection refused」が出る場合**  
+先に `docker-compose up -d postgres` を実行し、PostgreSQL が起動しているか確認してください（`docker-compose ps` で `postgres` が `Up` になっていること）。
 
 ### 4. Next.js を起動（ターミナル2）
 
@@ -72,7 +77,7 @@ npm run dev
 
 **Go バックエンド**
 
-- `DATABASE_URL`: 未設定時は `postgres://flowerseller:flowerseller@localhost:5432/flowerseller?sslmode=disable`
+- `DATABASE_URL`: 未設定時は `postgres://flowerseller:flowerseller@localhost:5432/flowerseller?sslmode=disable`（Docker 利用時はポート **5434** を指定してください）
 - `JWT_SECRET`: 未設定時は開発用の固定値
 - `PORT`: 未設定時は 8080
 

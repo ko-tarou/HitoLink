@@ -20,7 +20,7 @@ import (
 func main() {
 	dsn := os.Getenv("DATABASE_URL")
 	if dsn == "" {
-		dsn = "postgres://flowerseller:flowerseller@localhost:5432/flowerseller?sslmode=disable"
+		dsn = "postgres://flowerseller:flowerseller@localhost:5434/flowerseller?sslmode=disable"
 	}
 	jwtSecret := os.Getenv("JWT_SECRET")
 	if jwtSecret == "" {

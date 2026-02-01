@@ -6,7 +6,7 @@ services:
       POSTGRES_PASSWORD: flowerseller
       POSTGRES_DB: flowerseller
     ports:
-      - "5433:5432"   # ホスト 5433 → コンテナ内 5432（ローカル Postgres と競合しない）
+      - "5434:5432"   # ホスト 5434（他プロジェクトの 5433 などと競合しない）
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
