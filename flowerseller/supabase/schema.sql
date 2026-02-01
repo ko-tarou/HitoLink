@@ -213,9 +213,10 @@ CREATE INDEX idx_sales_payment ON public.sales(payment_method);
 
 CREATE TABLE public.price_adjustment_history (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  adjustment_type TEXT NOT NULL DEFAULT 'percentage', -- 'percentage' | 'fixed'
-  value DECIMAL(10, 2) NOT NULL, -- 例: 10 = +10%, -5 = -5%
-  category_id UUID REFERENCES public.categories(id) ON DELETE SET NULL, -- NULL = 全商品
+  adjustment_type TEXT NOT NULL DEFAULT 'percentage',
+  value DECIMAL(10, 2) NOT NULL,
+  category_id UUID REFERENCES public.categories(id) ON DELETE SET NULL,
+  product_id UUID REFERENCES public.products(id) ON DELETE SET NULL,
   created_by UUID NOT NULL REFERENCES auth.users(id) ON DELETE RESTRICT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );

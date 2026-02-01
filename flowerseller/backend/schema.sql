@@ -137,6 +137,7 @@ CREATE TABLE price_adjustment_history (
   adjustment_type TEXT NOT NULL DEFAULT 'percentage',
   value DECIMAL(10, 2) NOT NULL,
   category_id UUID REFERENCES categories(id) ON DELETE SET NULL,
+  product_id UUID REFERENCES products(id) ON DELETE SET NULL,
   created_by UUID NOT NULL REFERENCES users(id) ON DELETE RESTRICT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );

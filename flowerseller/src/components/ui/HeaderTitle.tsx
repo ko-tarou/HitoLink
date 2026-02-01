@@ -10,7 +10,7 @@ const pathToTitle: Record<string, string> = {
   "/pos/new": "売上登録",
   "/inbound": "入荷（OCR取り込み）",
   "/inbound/new": "入荷登録",
-  "/price": "価格管理（一括調整）",
+  "/price": "価格管理",
   "/freshness": "鮮度管理",
 };
 
