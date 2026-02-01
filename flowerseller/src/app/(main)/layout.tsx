@@ -1,6 +1,4 @@
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
-import { btn } from "@/lib/ui-classes";
+import { BackButton } from "@/components/ui/BackButton";
 
 export default function MainLayout({
   children,
@@ -10,13 +8,7 @@ export default function MainLayout({
   return (
     <div className="min-h-screen bg-base-subtle flex flex-col text-text">
       <header className="flex items-center gap-4 px-6 py-4 border-b border-border bg-base shrink-0 text-text">
-        <Link
-          href="/"
-          className={btn.iconBack}
-          aria-label="ホームへ戻る"
-        >
-          <ArrowLeft className="w-8 h-8" aria-hidden />
-        </Link>
+        <BackButton />
         <span className="font-bold text-lg">Flower Seller</span>
       </header>
       <main className="flex-1 overflow-auto text-text">{children}</main>

@@ -1,6 +1,8 @@
+import { Suspense } from "react";
 import { searchProductsByText } from "@/lib/actions/search";
 import { SearchResults } from "./SearchResults";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { ProductDetailDialog } from "@/components/inventory/ProductDetailDialog";
 
 export default async function SearchPage({
   searchParams,
@@ -18,9 +20,13 @@ export default async function SearchPage({
       ) : (
         <>
           <p className="text-text-secondary text-base mb-4">「{q}」の検索結果</p>
-          <SearchResults results={results} />
+          <SearchResults results={results} searchQuery={q} />
         </>
       )}
+
+      <Suspense fallback={null}>
+        <ProductDetailDialog />
+      </Suspense>
     </div>
   );
 }

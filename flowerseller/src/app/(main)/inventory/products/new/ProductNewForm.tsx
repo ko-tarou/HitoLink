@@ -48,7 +48,7 @@ export function ProductNewForm({ categories }: { categories: CategoryOption[] })
         description: description.trim() || null,
         disposal_days: disposalDays ? Number(disposalDays) : null,
       });
-      router.push("/inventory");
+      router.replace("/inventory");
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "登録に失敗しました");

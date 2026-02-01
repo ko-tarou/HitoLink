@@ -17,3 +17,11 @@ export const btn = {
 export const pageContainer = "mx-auto px-6 py-6 max-w-4xl";
 /** フォームページ用コンテナ（幅狭め） */
 export const formContainer = "mx-auto px-6 py-6 max-w-2xl";
+
+/** フォーム部品（デジタル庁: 8pxグリッド・フォーカス可視） */
+export const inputBase =
+  "w-full rounded-lg border-2 border-border bg-base px-4 py-3 text-base text-text placeholder:text-text-muted min-h-[48px] transition focus:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2";
+export const selectBase =
+  "w-full rounded-lg border-2 border-border bg-base px-4 py-3 text-base text-text min-h-[48px] transition focus:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2";
+export const labelBase = "block text-sm font-medium text-text mb-2";
+export const labelMuted = "block text-sm font-medium text-text-muted mb-2";

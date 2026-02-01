@@ -3,20 +3,14 @@ import { Suspense } from "react";
 import { getProducts } from "@/lib/actions/products";
 import { getInventoryBatches } from "@/lib/actions/inventory";
 import { getCategories } from "@/lib/actions/categories";
-import { formatYen } from "@/lib/utils";
 import { Plus } from "lucide-react";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { pageContainer } from "@/lib/ui-classes";
 import { btn } from "@/lib/ui-classes";
 import { SearchBar } from "@/components/SearchBar";
 import { InventoryFilters } from "@/components/inventory/InventoryFilters";
-import type { ProductType } from "@/types/database";
-
-const typeLabel: Record<string, string> = {
-  single: "単品",
-  bundle: "束",
-  arrangement: "アレンジ",
-};
+import { InventoryTableBody } from "@/components/inventory/InventoryTableBody";
+import { ProductDetailDialog } from "@/components/inventory/ProductDetailDialog";
 
 type SortBy = "name" | "updated_at" | "base_price";
 type Order = "asc" | "desc";
@@ -88,35 +82,20 @@ export default async function InventoryPage({
                   </th>
                 </tr>
               </thead>
-              <tbody>
-                {products.map((p) => (
-                  <tr
-                    key={p.id}
-                    className="border-b border-border hover:bg-base-subtle"
-                  >
-                    <td className="px-4 py-3 font-medium border-r border-border text-text">{p.name}</td>
-                    <td className="px-4 py-3 border-r border-border text-text">{typeLabel[p.type as ProductType] ?? p.type}</td>
-                    <td className="px-4 py-3 border-r border-border text-text">
-                      {(p as { categories: { name: string } | null }).categories?.name ?? "—"}
-                    </td>
-                    <td className="px-4 py-3 text-right border-r border-border text-text">
-                      {quantityByProductId[p.id] ?? 0}
-                    </td>
-                    <td className="px-4 py-3 text-right border-border text-text">{formatYen(p.base_price)}</td>
-                  </tr>
-                ))}
-                {products.length === 0 && (
-                  <tr>
-                    <td colSpan={5} className="px-4 py-8 text-text-muted text-center">
-                      商品がありません
-                    </td>
-                  </tr>
-                )}
-              </tbody>
+              <Suspense fallback={null}>
+                <InventoryTableBody
+                  products={products}
+                  quantityByProductId={quantityByProductId}
+                />
+              </Suspense>
             </table>
           </div>
         </div>
       </section>
+
+      <Suspense fallback={null}>
+        <ProductDetailDialog />
+      </Suspense>
     </div>
   );
 }
