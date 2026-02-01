@@ -6,7 +6,10 @@ import { motion } from "framer-motion";
 import { useInventoryStore } from "@/store/inventoryStore";
 import { getFreshnessStatus } from "@/data/mockData";
 import { FlowerCard } from "@/components/inventory/FlowerCard";
-import { InventoryFilters } from "@/components/inventory/InventoryFilters";
+import {
+  InventoryFilters,
+  type SortOrder,
+} from "@/components/inventory/InventoryFilters";
 import { FabButton } from "@/components/dashboard/FabButton";
 import { Navigation } from "@/components/layout/Navigation";
 
@@ -14,9 +17,10 @@ export default function InventoryPage() {
   const flowers = useInventoryStore((state) => state.flowers);
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [freshnessFilter, setFreshnessFilter] = useState("all");
+  const [sortOrder, setSortOrder] = useState<SortOrder>("default");
 
   const filteredFlowers = useMemo(() => {
-    return flowers.filter((flower) => {
+    const filtered = flowers.filter((flower) => {
       const categoryMatch =
         categoryFilter === "all" || flower.category === categoryFilter;
       const days =
@@ -29,7 +33,14 @@ export default function InventoryPage() {
         freshnessFilter === "all" || status === freshnessFilter;
       return categoryMatch && freshnessMatch;
     });
-  }, [flowers, categoryFilter, freshnessFilter]);
+
+    if (sortOrder === "aiueo") {
+      return [...filtered].sort((a, b) =>
+        a.nameJa.localeCompare(b.nameJa, "ja")
+      );
+    }
+    return filtered;
+  }, [flowers, categoryFilter, freshnessFilter, sortOrder]);
 
   return (
     <div className="flex min-h-screen flex-col md:flex-row">
@@ -69,8 +80,10 @@ export default function InventoryPage() {
             <InventoryFilters
               categoryFilter={categoryFilter}
               freshnessFilter={freshnessFilter}
+              sortOrder={sortOrder}
               onCategoryChange={setCategoryFilter}
               onFreshnessChange={setFreshnessFilter}
+              onSortOrderChange={setSortOrder}
             />
           </div>
 

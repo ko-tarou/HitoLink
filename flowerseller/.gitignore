@@ -1,0 +1,53 @@
+# Dependencies
+node_modules/
+
+# Next.js
+.next/
+out/
+
+# Build / cache
+*.tsbuildinfo
+.turbo/
+dist/
+
+# Environment (秘密情報をコミットしない)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+!.env.local.example
+
+# Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+/backend/flowerseller
+/backend/*.test
+__debug_bin
+
+# IDE / Editor
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Vercel (デプロイ時)
+.vercel
+
+# Debug
+*.prof
+*.pprof

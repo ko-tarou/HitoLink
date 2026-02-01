@@ -11,18 +11,24 @@ import {
 import { CATEGORY_LABELS } from "@/data/mockData";
 import type { FlowerCategory } from "@/data/mockData";
 
+export type SortOrder = "default" | "aiueo";
+
 interface InventoryFiltersProps {
   categoryFilter: string;
   freshnessFilter: string;
+  sortOrder: SortOrder;
   onCategoryChange: (value: string) => void;
   onFreshnessChange: (value: string) => void;
+  onSortOrderChange: (value: SortOrder) => void;
 }
 
 export function InventoryFilters({
   categoryFilter,
   freshnessFilter,
+  sortOrder,
   onCategoryChange,
   onFreshnessChange,
+  onSortOrderChange,
 }: InventoryFiltersProps) {
   return (
     <motion.div
@@ -72,6 +78,25 @@ export function InventoryFilters({
             </SelectItem>
             <SelectItem value="danger" className="rounded-lg">
               Danger (7日+)
+            </SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="flex items-center gap-2">
+        <label className="text-sm text-muted-foreground">並び順</label>
+        <Select
+          value={sortOrder}
+          onValueChange={(value) => onSortOrderChange(value as SortOrder)}
+        >
+          <SelectTrigger className="w-[140px] rounded-xl border-0 bg-card/80 shadow-sm">
+            <SelectValue placeholder="並び順" />
+          </SelectTrigger>
+          <SelectContent className="rounded-xl">
+            <SelectItem value="default" className="rounded-lg">
+              登録順
+            </SelectItem>
+            <SelectItem value="aiueo" className="rounded-lg">
+              あいうえお順
             </SelectItem>
           </SelectContent>
         </Select>

@@ -1,0 +1,19 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: flowerseller
+      POSTGRES_PASSWORD: flowerseller
+      POSTGRES_DB: flowerseller
+    ports:
+      - "5433:5432"   # ホスト 5433 → コンテナ内 5432（ローカル Postgres と競合しない）
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U flowerseller"]
+      interval: 2s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata: {}

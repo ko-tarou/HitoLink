@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --maroon: #b91c3c;
+  --maroon-light: #e11d48;
+  --maroon-dark: #9f1239;
+  --foreground: #ffffff;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--maroon);
+  min-height: 100vh;
+}
