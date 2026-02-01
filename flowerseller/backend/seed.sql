@@ -29,6 +29,13 @@ INSERT INTO inventory_batches (product_id, quantity, disposal_date) VALUES
   ('c0000000-0000-0000-0000-000000000002', 30, CURRENT_DATE + 5),
   ('c0000000-0000-0000-0000-000000000004', 10, CURRENT_DATE + 7);
 
+-- 品質管理画面用デモ（入荷から指定日数経過したバッチ＝一覧に表示される）
+-- バラ(赤) disposal_days=7 → 8日前に入荷、チューリップ 5日→6日前、ガーベラ 7日→10日前
+INSERT INTO inventory_batches (product_id, quantity, received_at, disposal_date) VALUES
+  ('c0000000-0000-0000-0000-000000000001', 20, now() - interval '8 days', CURRENT_DATE - 1),
+  ('c0000000-0000-0000-0000-000000000002', 15, now() - interval '6 days', CURRENT_DATE),
+  ('c0000000-0000-0000-0000-000000000003', 10, now() - interval '10 days', CURRENT_DATE - 3);
+
 -- 水やりデモデータ（上で入れた在庫バッチのうち先頭2件に次回水やりを設定）
 INSERT INTO watering_records (inventory_batch_id, next_watering_at)
 SELECT id, now() + interval '1 day' FROM inventory_batches ORDER BY created_at DESC LIMIT 2;

@@ -11,7 +11,7 @@ const pathToTitle: Record<string, string> = {
   "/inbound": "入荷（OCR取り込み）",
   "/inbound/new": "入荷登録",
   "/price": "価格管理",
-  "/freshness": "鮮度管理",
+  "/freshness": "品質管理",
 };
 
 export function HeaderTitle() {

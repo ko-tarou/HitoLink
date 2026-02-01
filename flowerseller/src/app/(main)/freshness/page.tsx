@@ -1,79 +1,57 @@
 import { getInventoryBatches } from "@/lib/actions/inventory";
-import { getWateringRecords } from "@/lib/actions/watering";
-import { formatDate, formatDateTime } from "@/lib/utils";
-import { Droplets } from "lucide-react";
-import { WateringForm } from "./WateringForm";
+import { pageContainer } from "@/lib/ui-classes";
+import { QualityTodoList, type TodoBatch } from "./QualityTodoList";
+
+type Batch = {
+  id: string;
+  product_id: string;
+  quantity: number;
+  received_at: string;
+  disposal_date: string | null;
+  products: {
+    id: string;
+    name: string;
+    disposal_days: number | null;
+  } | null;
+};
+
+const DEFAULT_DISPOSAL_DAYS = 3;
+
+/** 入荷から指定日数（品質管理日数）を経過したバッチを TODO として返す */
+function getQualityTodoBatches(batches: Batch[]): Batch[] {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  return batches.filter((b) => {
+    const days = b.products?.disposal_days ?? DEFAULT_DISPOSAL_DAYS;
+    const received = new Date(b.received_at);
+    received.setHours(0, 0, 0, 0);
+    const elapsedDays = Math.floor(
+      (today.getTime() - received.getTime()) / (24 * 60 * 60 * 1000)
+    );
+    return elapsedDays >= days;
+  });
+}
 
 export default async function FreshnessPage() {
-  const [batches, wateringReminders] = await Promise.all([
-    getInventoryBatches(),
-    getWateringRecords({ nextWateringBefore: new Date().toISOString() }),
-  ]);
-
-  const soonDisposal = batches.filter((b) => {
-    if (!b.disposal_date) return false;
-    const d = new Date(b.disposal_date);
-    const in3 = new Date();
-    in3.setDate(in3.getDate() + 3);
-    return d <= in3;
-  });
+  const batches = (await getInventoryBatches()) as Batch[];
+  const todoBatches = getQualityTodoBatches(batches) as TodoBatch[];
 
   return (
-    <div className="mx-auto px-6 py-6 max-w-2xl">
-      <section className="mb-8" aria-labelledby="watering-heading">
-        <h3 id="watering-heading" className="text-base font-semibold text-text mb-3 flex items-center gap-2">
-          <Droplets className="w-5 h-5 text-primary" aria-hidden /> 水やりリマインド
-        </h3>
-        <div className="rounded-xl bg-base border border-border overflow-hidden">
+    <div className={pageContainer}>
+      <section aria-labelledby="quality-todo-heading">
+        <h2
+          id="quality-todo-heading"
+          className="text-xl font-bold text-text mb-1"
+        >
+          品質管理
+        </h2>
+        <p className="text-sm text-text-muted mb-4">
+          入荷から指定日数が経過した在庫が表示されます。
+        </p>
+        <div className="rounded-xl bg-base border-2 border-border overflow-hidden">
           <ul className="divide-y divide-border" role="list">
-            {wateringReminders.length === 0 ? (
-              <li className="px-6 py-8 text-text-muted text-center" role="status">
-                リマインド対象はありません
-              </li>
-            ) : (
-              (wateringReminders as { id: string; next_watering_at: string | null; inventory_batches: { products: { name: string } | null } | null }[]).map(
-                (r) => (
-                  <li key={r.id} className="px-6 py-4 flex justify-between items-center text-text">
-                    <span>{r.inventory_batches?.products?.name ?? "在庫"}</span>
-                    <span className="text-text-muted text-sm">
-                      {r.next_watering_at
-                        ? formatDateTime(r.next_watering_at)
-                        : "—"}
-                    </span>
-                  </li>
-                )
-              )
-            )}
-          </ul>
-        </div>
-        <WateringForm batches={batches} />
-      </section>
-
-      <section aria-labelledby="disposal-heading">
-        <h3 id="disposal-heading" className="text-base font-semibold text-text mb-3">
-          品質管理：要確認の在庫（3日以内）
-        </h3>
-        <div className="rounded-xl bg-base border border-border overflow-hidden">
-          <ul className="divide-y divide-border" role="list">
-            {soonDisposal.length === 0 ? (
-              <li className="px-6 py-8 text-text-muted text-center" role="status">
-                該当なし
-              </li>
-            ) : (
-              soonDisposal.map((b) => (
-                <li
-                  key={b.id}
-                  className="px-6 py-4 flex justify-between items-center text-text"
-                >
-                  <span className="font-medium">
-                    {(b as { products: { name: string } | null }).products?.name ?? "—"}
-                  </span>
-                  <span className="text-text-muted text-sm">
-                    {b.disposal_date ? formatDate(b.disposal_date) : "—"}
-                  </span>
-                </li>
-              ))
-            )}
+            <QualityTodoList batches={todoBatches} />
           </ul>
         </div>
       </section>

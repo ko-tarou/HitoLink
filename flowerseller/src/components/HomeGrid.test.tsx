@@ -13,7 +13,7 @@ describe("HomeGrid", () => {
     expect(screen.getByRole("link", { name: "入荷、OCR取り込み" })).toHaveAttribute("href", "/inbound");
     expect(screen.getByRole("link", { name: "売上、売上計上・履歴" })).toHaveAttribute("href", "/pos");
     expect(screen.getByRole("link", { name: "価格管理、一括調整" })).toHaveAttribute("href", "/price");
-    expect(screen.getByRole("link", { name: "鮮度管理、水やり・品質管理" })).toHaveAttribute("href", "/freshness");
+    expect(screen.getByRole("link", { name: "品質管理、品質管理すべき在庫" })).toHaveAttribute("href", "/freshness");
   });
 
   it("renders date and time status", () => {

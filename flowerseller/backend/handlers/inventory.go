@@ -12,7 +12,7 @@ func (h *Handler) ListInventoryBatches(w http.ResponseWriter, r *http.Request) {
 	productID := r.URL.Query().Get("product_id")
 	disposalBefore := r.URL.Query().Get("disposal_before")
 	q := `SELECT b.id, b.product_id, b.quantity, b.received_at, b.disposal_date, b.location, b.created_at, b.updated_at,
-p.id as p_id, p.name as p_name, p.type::text as p_type, p.base_price
+p.id as p_id, p.name as p_name, p.type::text as p_type, p.base_price, p.disposal_days
 FROM inventory_batches b JOIN products p ON b.product_id = p.id WHERE 1=1`
 	args := []interface{}{}
 	n := 1
@@ -41,14 +41,15 @@ FROM inventory_batches b JOIN products p ON b.product_id = p.id WHERE 1=1`
 		var createdAt, updatedAt interface{}
 		var pID, pName, pType string
 		var basePrice float64
-		if err := rows.Scan(&id, &productID, &quantity, &receivedAt, &disposalDate, &location, &createdAt, &updatedAt, &pID, &pName, &pType, &basePrice); err != nil {
+		var disposalDays *float64
+		if err := rows.Scan(&id, &productID, &quantity, &receivedAt, &disposalDate, &location, &createdAt, &updatedAt, &pID, &pName, &pType, &basePrice, &disposalDays); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		list = append(list, map[string]interface{}{
 			"id": id, "product_id": productID, "quantity": quantity, "received_at": receivedAt,
 			"disposal_date": disposalDate, "location": location, "created_at": createdAt, "updated_at": updatedAt,
-			"products": map[string]interface{}{"id": pID, "name": pName, "type": pType, "base_price": basePrice},
+			"products": map[string]interface{}{"id": pID, "name": pName, "type": pType, "base_price": basePrice, "disposal_days": disposalDays},
 		})
 	}
 	w.Header().Set("Content-Type", "application/json")
