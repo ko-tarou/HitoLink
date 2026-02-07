@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import {
-  Package,
   CreditCard,
   ShoppingCart,
   History,
@@ -18,12 +17,11 @@ type Tile = {
   icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
 };
 
-/** 販売者・仲介者向け4タイル（2×2） */
+/** 販売者・仲介者向け3タイル（在庫管理なし） */
 const tilesSeller: Tile[] = [
-  { href: "/inventory", label: "在庫管理", sublabel: "商品・バッチ一覧", icon: Package },
-  { href: "/freshness", label: "直接購入", sublabel: "品質管理すべき在庫", icon: ShoppingCart },
+  { href: "/freshness", label: "直接購入", sublabel: "生産者出品一覧・購入・チャット", icon: ShoppingCart },
   { href: "/inbound", label: "入荷履歴", sublabel: "入荷記録一覧", icon: History },
-  { href: "/pos", label: "売上", sublabel: "売上計上・履歴", icon: CreditCard },
+  { href: "/inbound-expenses", label: "入荷出費", sublabel: "売上・入荷にまつわる出費", icon: CreditCard },
 ];
 
 /** 生産者向け4タイル（2×2）・ロジックは /producer/* で完全分離 */
@@ -62,9 +60,12 @@ export function HomeGrid({ businessType = "" }: HomeGridProps) {
     minute: "2-digit",
   });
 
+  const isSellerOrIntermediary = businessType === "seller" || businessType === "intermediary";
+  const gridCols = isSellerOrIntermediary && tiles.length === 3 ? "grid-cols-2 sm:grid-cols-3" : "grid-cols-2";
+
   return (
     <div
-      className="grid grid-cols-2 gap-4 w-full max-w-2xl mx-auto"
+      className={`grid ${gridCols} gap-4 w-full max-w-2xl mx-auto`}
       role="navigation"
       aria-label="メインメニュー"
     >
@@ -84,7 +85,7 @@ export function HomeGrid({ businessType = "" }: HomeGridProps) {
         );
       })}
       <div
-        className="col-span-2 flex justify-center items-center gap-4 py-6 text-foreground-secondary text-base"
+        className={`${tiles.length === 3 ? "col-span-3" : "col-span-2"} flex justify-center items-center gap-4 py-6 text-foreground-secondary text-base`}
         role="status"
         aria-live="polite"
       >
@@ -96,3 +97,4 @@ export function HomeGrid({ businessType = "" }: HomeGridProps) {
     </div>
   );
 }
+

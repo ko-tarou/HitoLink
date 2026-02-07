@@ -91,6 +91,8 @@ func main() {
 		// Direct sale listings (生産者: 直接販売の出品一覧・編集)
 		r.Get("/direct_sale_listings", h.ListDirectSaleListings)
 		r.Patch("/direct_sale_listings/{id}", h.UpdateDirectSaleListing)
+		// Marketplace (販売者・仲介者: 直接購入用・全生産者出品一覧)
+		r.Get("/marketplace_listings", h.ListMarketplaceListings)
 	})
 
 	srv := &http.Server{Addr: ":" + port, Handler: r}

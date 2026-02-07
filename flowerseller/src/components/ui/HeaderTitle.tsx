@@ -8,10 +8,11 @@ const pathToTitle: Record<string, string> = {
   "/search": "検索結果",
   "/pos": "売上",
   "/pos/new": "売上登録",
-  "/inbound": "入荷（OCR取り込み）",
+  "/inbound": "入荷履歴",
   "/inbound/new": "入荷登録",
+  "/inbound-expenses": "入荷出費",
   "/price": "価格管理",
-  "/freshness": "品質管理",
+  "/freshness": "直接購入",
   "/settings": "アカウント管理",
   // 生産者（販売者・仲介者とロジック分離）
   "/producer/cultivation": "栽培管理",

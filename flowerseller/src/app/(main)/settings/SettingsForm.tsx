@@ -23,7 +23,7 @@ export function SettingsForm({
 }: Props) {
   const router = useRouter();
   const [password, setPassword] = useState("");
-  const [businessType, setBusinessType] = useState(initialBusinessType);
+  const [businessType, setBusinessType] = useState(() => initialBusinessType ?? "");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -36,7 +36,7 @@ export function SettingsForm({
 
     const result = await updateMe({
       ...(password ? { password } : {}),
-      business_type: businessType,
+      business_type: businessType ?? "",
     });
 
     setLoading(false);
@@ -46,9 +46,9 @@ export function SettingsForm({
     }
     setSuccess(true);
     setPassword("");
-    router.refresh();
-    // 業態を変えた場合にホームのタイルをすぐ反映させるためホームへ遷移
+    // 業態を変えた場合にホームのタイルをすぐ反映させるためホームへ遷移してから更新
     router.push("/");
+    router.refresh();
   }
 
   return (
@@ -80,7 +80,7 @@ export function SettingsForm({
           </label>
           <select
             id="business_type"
-            value={businessType}
+            value={businessType ?? ""}
             onChange={(e) => setBusinessType(e.target.value)}
             className={selectBase}
           >

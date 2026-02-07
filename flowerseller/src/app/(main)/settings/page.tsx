@@ -15,8 +15,9 @@ export default async function SettingsPage() {
   return (
     <div className="mx-auto px-6 py-6 max-w-2xl text-text">
       <SettingsForm
+        key={me.business_type ?? "none"}
         initialOrganizationName={me.organization_name}
-        initialBusinessType={me.business_type}
+        initialBusinessType={me.business_type ?? ""}
       />
     </div>
   );

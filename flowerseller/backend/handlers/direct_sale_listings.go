@@ -11,6 +11,47 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
+// ListMarketplaceListings は全生産者の出品一覧を返す（販売者・仲介者の直接購入用）。生産者名を JOIN で付与。
+func (h *Handler) ListMarketplaceListings(w http.ResponseWriter, r *http.Request) {
+	rows, err := h.pool.Query(r.Context(),
+		`SELECT l.id, l.product_name, l.price, l.quantity, l.delivery_option, l.image_url, l.description, l.created_at, l.updated_at,
+u.id as producer_id, u.organization_name as producer_name
+FROM direct_sale_listings l
+JOIN users u ON l.created_by = u.id
+ORDER BY l.updated_at DESC LIMIT 100`)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+	var list []map[string]interface{}
+	for rows.Next() {
+		var id, productName, deliveryOption, producerID, producerName string
+		var price, quantity float64
+		var imageURL, description *string
+		var createdAt, updatedAt interface{}
+		if err := rows.Scan(&id, &productName, &price, &quantity, &deliveryOption, &imageURL, &description, &createdAt, &updatedAt, &producerID, &producerName); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		list = append(list, map[string]interface{}{
+			"id":              id,
+			"product_name":    productName,
+			"price":           price,
+			"quantity":        quantity,
+			"delivery_option": deliveryOption,
+			"image_url":       imageURL,
+			"description":     description,
+			"created_at":      createdAt,
+			"updated_at":      updatedAt,
+			"producer_id":     producerID,
+			"producer_name":   producerName,
+		})
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(list)
+}
+
 // ListDirectSaleListings はログイン中の生産者の出品一覧を返す。
 func (h *Handler) ListDirectSaleListings(w http.ResponseWriter, r *http.Request) {
 	claims := middleware.GetClaims(r.Context())
