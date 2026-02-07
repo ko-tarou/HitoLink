@@ -14,15 +14,15 @@ import (
 
 func (h *Handler) Signup(w http.ResponseWriter, r *http.Request) {
 	var body struct {
-		Email    string `json:"email"`
-		Password string `json:"password"`
+		OrganizationName string `json:"organization_name"`
+		Password         string `json:"password"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		http.Error(w, "invalid json", http.StatusBadRequest)
 		return
 	}
-	if body.Email == "" || body.Password == "" {
-		http.Error(w, "email and password required", http.StatusBadRequest)
+	if body.OrganizationName == "" || body.Password == "" {
+		http.Error(w, "organization_name and password required", http.StatusBadRequest)
 		return
 	}
 	hash, err := bcrypt.GenerateFromPassword([]byte(body.Password), bcrypt.DefaultCost)
@@ -32,11 +32,11 @@ func (h *Handler) Signup(w http.ResponseWriter, r *http.Request) {
 	}
 	var id string
 	err = h.pool.QueryRow(r.Context(),
-		`INSERT INTO users (email, password_hash, role) VALUES ($1,$2,'member') RETURNING id`,
-		body.Email, string(hash)).Scan(&id)
+		`INSERT INTO users (organization_name, password_hash, role) VALUES ($1,$2,'member') RETURNING id`,
+		body.OrganizationName, string(hash)).Scan(&id)
 	if err != nil {
 		if isUniqueViolation(err) {
-			http.Error(w, "email already exists", http.StatusConflict)
+			http.Error(w, "organization_name already exists", http.StatusConflict)
 			return
 		}
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -53,20 +53,20 @@ func (h *Handler) Signup(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	var body struct {
-		Email    string `json:"email"`
-		Password string `json:"password"`
+		OrganizationName string `json:"organization_name"`
+		Password         string `json:"password"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		http.Error(w, "invalid json", http.StatusBadRequest)
 		return
 	}
-	if body.Email == "" || body.Password == "" {
-		http.Error(w, "email and password required", http.StatusBadRequest)
+	if body.OrganizationName == "" || body.Password == "" {
+		http.Error(w, "organization_name and password required", http.StatusBadRequest)
 		return
 	}
 	var id, hash, role string
 	err := h.pool.QueryRow(r.Context(),
-		`SELECT id, password_hash, role::text FROM users WHERE email = $1`, body.Email).
+		`SELECT id, password_hash, role::text FROM users WHERE organization_name = $1`, body.OrganizationName).
 		Scan(&id, &hash, &role)
 	if err != nil {
 		http.Error(w, "invalid credentials", http.StatusUnauthorized)

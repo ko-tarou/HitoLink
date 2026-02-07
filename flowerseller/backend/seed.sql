@@ -2,9 +2,10 @@
 -- 実行例（Docker の Postgres が 5434 の場合）:
 --   プロジェクトルートで: docker-compose exec -T postgres psql -U flowerseller -d flowerseller < backend/seed.sql
 
--- デモ用ユーザー（価格調整履歴の created_by 用。パスワードは "demo"）
-INSERT INTO users (id, email, password_hash, role, display_name) VALUES
-  ('a0000000-0000-0000-0000-000000000001', 'demo@flowerseller.local', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'admin', 'デモ')
+-- デモ用ユーザー（団体名: デモ花屋、パスワード: demo）
+-- reset-and-seed.sh 実行時に DEMO_HASH_PLACEHOLDER が go run ./cmd/gen-bcrypt の結果で置換されます
+INSERT INTO users (id, organization_name, password_hash, role, display_name) VALUES
+  ('a0000000-0000-0000-0000-000000000001', 'デモ花屋', 'DEMO_HASH_PLACEHOLDER', 'admin', 'デモ')
 ON CONFLICT (id) DO NOTHING;
 
 -- カテゴリ

@@ -8,16 +8,25 @@ export async function POST(request: NextRequest) {
     const res = await fetch(`${API_BASE}/auth/signup`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: body.email, password: body.password }),
+      body: JSON.stringify({
+        organization_name: body.organization_name,
+        password: body.password,
+      }),
     });
-    const data = await res.json().catch(() => ({}));
+    const text = await res.text();
+    const data = (() => {
+      try {
+        return JSON.parse(text) as { error?: string; token?: string };
+      } catch {
+        return {};
+      }
+    })();
     if (!res.ok) {
-      return NextResponse.json(
-        { error: (data as { error?: string })?.error || "Signup failed" },
-        { status: res.status }
-      );
+      const errMsg =
+        data.error || text.replace(/\n$/, "") || "アカウントの作成に失敗しました";
+      return NextResponse.json({ error: errMsg }, { status: res.status });
     }
-    const token = (data as { token?: string }).token;
+    const token = data.token;
     if (!token) {
       return NextResponse.json({ ok: true });
     }

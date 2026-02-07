@@ -8,7 +8,10 @@ export async function POST(request: NextRequest) {
     const res = await fetch(`${API_BASE}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: body.email, password: body.password }),
+      body: JSON.stringify({
+        organization_name: body.organization_name,
+        password: body.password,
+      }),
     });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) {

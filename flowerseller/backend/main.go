@@ -48,6 +48,9 @@ func main() {
 
 	r.Route("/api", func(r chi.Router) {
 		r.Use(middleware.JWT(jwtSecret))
+		// Current user (account/settings)
+		r.Get("/me", h.GetMe)
+		r.Patch("/me", h.UpdateMe)
 		// Categories
 		r.Get("/categories", h.ListCategories)
 		r.Post("/categories", h.CreateCategory)
@@ -78,6 +81,11 @@ func main() {
 		r.Post("/price_adjustment", h.ApplyPriceAdjustment)
 		// Search (no auth required for read; allow in API group with optional JWT)
 		r.Get("/search/products", h.SearchProducts)
+		// Cultivation (生産者: 栽培管理)
+		r.Get("/cultivation_batches", h.ListCultivationBatches)
+		r.Post("/cultivation_batches", h.CreateCultivationBatch)
+		r.Patch("/cultivation_batches/{id}", h.UpdateCultivationBatch)
+		r.Delete("/cultivation_batches/{id}", h.DeleteCultivationBatch)
 	})
 
 	srv := &http.Server{Addr: ":" + port, Handler: r}

@@ -12,11 +12,14 @@ CREATE TYPE user_role AS ENUM ('admin', 'member');
 CREATE TYPE inbound_status AS ENUM ('pending', 'processed', 'failed');
 
 -- Users (replaces Supabase auth.users + profiles)
+-- ログインは団体名(organization_name) + パスワードで行う
+-- business_type: 'seller'=販売者, 'producer'=生産者, 'intermediary'=仲介者
 CREATE TABLE users (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  email TEXT NOT NULL UNIQUE,
+  organization_name TEXT NOT NULL UNIQUE,
   password_hash TEXT NOT NULL,
   role user_role NOT NULL DEFAULT 'member',
+  business_type TEXT CHECK (business_type IS NULL OR business_type IN ('seller', 'producer', 'intermediary')),
   display_name TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
@@ -144,6 +147,27 @@ CREATE TABLE price_adjustment_history (
 
 CREATE INDEX idx_price_adjustment_created ON price_adjustment_history(created_at);
 
+-- 生産者: 栽培管理（現在栽培中の花・植付数・収穫数・収穫率）
+-- 品目はテキスト入力で product_name に保存。product_id は互換用に nullable。
+CREATE TABLE cultivation_batches (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  product_id UUID REFERENCES products(id) ON DELETE SET NULL,
+  product_name TEXT NOT NULL,
+  quantity_planted DECIMAL(12, 2) NOT NULL CHECK (quantity_planted > 0),
+  quantity_harvested DECIMAL(12, 2) CHECK (quantity_harvested IS NULL OR quantity_harvested >= 0),
+  harvest_rate DECIMAL(5, 2) CHECK (harvest_rate IS NULL OR (harvest_rate >= 0 AND harvest_rate <= 100)),
+  started_at DATE NOT NULL DEFAULT CURRENT_DATE,
+  expected_harvest_at DATE,
+  status TEXT NOT NULL DEFAULT 'growing' CHECK (status IN ('growing', 'harvested')),
+  notes TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX idx_cultivation_batches_product ON cultivation_batches(product_id);
+CREATE INDEX idx_cultivation_batches_status ON cultivation_batches(status);
+CREATE INDEX idx_cultivation_batches_started ON cultivation_batches(started_at);
+
 -- Triggers for updated_at
 CREATE OR REPLACE FUNCTION set_updated_at()
 RETURNS TRIGGER AS $$
@@ -157,3 +181,4 @@ CREATE TRIGGER users_updated_at BEFORE UPDATE ON users FOR EACH ROW EXECUTE PROC
 CREATE TRIGGER categories_updated_at BEFORE UPDATE ON categories FOR EACH ROW EXECUTE PROCEDURE set_updated_at();
 CREATE TRIGGER products_updated_at BEFORE UPDATE ON products FOR EACH ROW EXECUTE PROCEDURE set_updated_at();
 CREATE TRIGGER inventory_batches_updated_at BEFORE UPDATE ON inventory_batches FOR EACH ROW EXECUTE PROCEDURE set_updated_at();
+CREATE TRIGGER cultivation_batches_updated_at BEFORE UPDATE ON cultivation_batches FOR EACH ROW EXECUTE PROCEDURE set_updated_at();

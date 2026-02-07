@@ -20,9 +20,9 @@ func TestSignup_InvalidJSON_Returns400(t *testing.T) {
 	}
 }
 
-func TestSignup_EmptyEmail_Returns400(t *testing.T) {
+func TestSignup_EmptyOrganizationName_Returns400(t *testing.T) {
 	h := New(&mockQuerier{}, "secret")
-	body := map[string]string{"email": "", "password": "pass123"}
+	body := map[string]string{"organization_name": "", "password": "pass123"}
 	raw, _ := json.Marshal(body)
 	req := httptest.NewRequest(http.MethodPost, "/auth/signup", bytes.NewReader(raw))
 	req.Header.Set("Content-Type", "application/json")
@@ -32,14 +32,14 @@ func TestSignup_EmptyEmail_Returns400(t *testing.T) {
 	if rec.Code != http.StatusBadRequest {
 		t.Errorf("expected 400, got %d", rec.Code)
 	}
-	if rec.Body.String() != "email and password required\n" {
-		t.Errorf("expected 'email and password required', got %q", rec.Body.String())
+	if rec.Body.String() != "organization_name and password required\n" {
+		t.Errorf("expected 'organization_name and password required', got %q", rec.Body.String())
 	}
 }
 
 func TestSignup_EmptyPassword_Returns400(t *testing.T) {
 	h := New(&mockQuerier{}, "secret")
-	body := map[string]string{"email": "a@b.com", "password": ""}
+	body := map[string]string{"organization_name": "花屋A", "password": ""}
 	raw, _ := json.Marshal(body)
 	req := httptest.NewRequest(http.MethodPost, "/auth/signup", bytes.NewReader(raw))
 	req.Header.Set("Content-Type", "application/json")
@@ -63,9 +63,9 @@ func TestLogin_InvalidJSON_Returns400(t *testing.T) {
 	}
 }
 
-func TestLogin_EmptyEmail_Returns400(t *testing.T) {
+func TestLogin_EmptyOrganizationName_Returns400(t *testing.T) {
 	h := New(&mockQuerier{}, "secret")
-	body := map[string]string{"email": "", "password": "pass"}
+	body := map[string]string{"organization_name": "", "password": "pass"}
 	raw, _ := json.Marshal(body)
 	req := httptest.NewRequest(http.MethodPost, "/auth/login", bytes.NewReader(raw))
 	req.Header.Set("Content-Type", "application/json")
@@ -80,7 +80,7 @@ func TestLogin_EmptyEmail_Returns400(t *testing.T) {
 func TestLogin_UserNotFound_Returns401(t *testing.T) {
 	// QueryRow returns ErrNoRows -> "invalid credentials"
 	h := New(&mockQuerier{}, "secret")
-	body := map[string]string{"email": "nobody@example.com", "password": "pass"}
+	body := map[string]string{"organization_name": "存在しない団体", "password": "pass"}
 	raw, _ := json.Marshal(body)
 	req := httptest.NewRequest(http.MethodPost, "/auth/login", bytes.NewReader(raw))
 	req.Header.Set("Content-Type", "application/json")
