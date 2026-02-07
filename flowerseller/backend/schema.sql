@@ -168,6 +168,43 @@ CREATE INDEX idx_cultivation_batches_product ON cultivation_batches(product_id);
 CREATE INDEX idx_cultivation_batches_status ON cultivation_batches(status);
 CREATE INDEX idx_cultivation_batches_started ON cultivation_batches(started_at);
 
+-- 生産者: 出荷履歴（表示のみ。生産者からの変更は行わない）
+CREATE TABLE shipments (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  shipped_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  destination TEXT,
+  notes TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE shipment_items (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  shipment_id UUID NOT NULL REFERENCES shipments(id) ON DELETE CASCADE,
+  product_name TEXT NOT NULL,
+  quantity DECIMAL(12, 2) NOT NULL CHECK (quantity > 0),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX idx_shipments_shipped_at ON shipments(shipped_at DESC);
+CREATE INDEX idx_shipment_items_shipment ON shipment_items(shipment_id);
+
+-- 生産者: 直接販売の出品（メルカリ風・自分の出品一覧）
+-- delivery_option: pickup_only=現地のみ, delivery_only=配送のみ, both=現地・配送可
+CREATE TABLE direct_sale_listings (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  created_by UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  product_name TEXT NOT NULL,
+  price DECIMAL(12, 2) NOT NULL CHECK (price >= 0),
+  quantity DECIMAL(12, 2) NOT NULL CHECK (quantity >= 0),
+  delivery_option TEXT NOT NULL DEFAULT 'both' CHECK (delivery_option IN ('pickup_only', 'delivery_only', 'both')),
+  image_url TEXT,
+  description TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX idx_direct_sale_listings_created_by ON direct_sale_listings(created_by);
+
 -- Triggers for updated_at
 CREATE OR REPLACE FUNCTION set_updated_at()
 RETURNS TRIGGER AS $$
@@ -182,3 +219,4 @@ CREATE TRIGGER categories_updated_at BEFORE UPDATE ON categories FOR EACH ROW EX
 CREATE TRIGGER products_updated_at BEFORE UPDATE ON products FOR EACH ROW EXECUTE PROCEDURE set_updated_at();
 CREATE TRIGGER inventory_batches_updated_at BEFORE UPDATE ON inventory_batches FOR EACH ROW EXECUTE PROCEDURE set_updated_at();
 CREATE TRIGGER cultivation_batches_updated_at BEFORE UPDATE ON cultivation_batches FOR EACH ROW EXECUTE PROCEDURE set_updated_at();
+CREATE TRIGGER direct_sale_listings_updated_at BEFORE UPDATE ON direct_sale_listings FOR EACH ROW EXECUTE PROCEDURE set_updated_at();

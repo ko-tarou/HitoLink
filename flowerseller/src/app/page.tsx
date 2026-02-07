@@ -5,6 +5,9 @@ import { LogoutButton } from "@/components/ui/LogoutButton";
 import { getMe } from "@/lib/actions/me";
 import { btn } from "@/lib/ui-classes";
 
+// 常にDBのアカウント・業態を取得して表示する（キャッシュで古い業態が出ないようにする）
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
   const me = await getMe();
   return (

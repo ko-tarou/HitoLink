@@ -86,6 +86,11 @@ func main() {
 		r.Post("/cultivation_batches", h.CreateCultivationBatch)
 		r.Patch("/cultivation_batches/{id}", h.UpdateCultivationBatch)
 		r.Delete("/cultivation_batches/{id}", h.DeleteCultivationBatch)
+		// Shipments (生産者: 出荷履歴・表示のみ)
+		r.Get("/shipments", h.ListShipments)
+		// Direct sale listings (生産者: 直接販売の出品一覧・編集)
+		r.Get("/direct_sale_listings", h.ListDirectSaleListings)
+		r.Patch("/direct_sale_listings/{id}", h.UpdateDirectSaleListing)
 	})
 
 	srv := &http.Server{Addr: ":" + port, Handler: r}

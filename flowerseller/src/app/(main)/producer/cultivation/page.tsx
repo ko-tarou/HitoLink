@@ -24,9 +24,6 @@ export default async function ProducerCultivationPage() {
             <Plus className="w-5 h-5" aria-hidden /> 栽培を追加
           </Link>
         </div>
-        <p className="text-sm text-text-muted mb-4">
-          植付数・収穫率・開始日・予定収穫日を管理します。収穫したら「収穫登録」で収穫数と収穫率を記録してください。
-        </p>
         <div className="rounded-xl bg-base border-2 border-border overflow-hidden">
           <CultivationGrowingList batches={growingBatches} />
         </div>

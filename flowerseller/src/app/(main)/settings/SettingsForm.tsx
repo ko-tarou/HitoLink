@@ -47,6 +47,8 @@ export function SettingsForm({
     setSuccess(true);
     setPassword("");
     router.refresh();
+    // 業態を変えた場合にホームのタイルをすぐ反映させるためホームへ遷移
+    router.push("/");
   }
 
   return (

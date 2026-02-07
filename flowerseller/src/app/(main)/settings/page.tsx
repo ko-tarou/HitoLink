@@ -1,6 +1,8 @@
 import { getMe } from "@/lib/actions/me";
 import { SettingsForm } from "./SettingsForm";
 
+export const dynamic = "force-dynamic";
+
 export default async function SettingsPage() {
   const me = await getMe();
   if (!me) {

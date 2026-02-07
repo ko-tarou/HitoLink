@@ -68,6 +68,11 @@ done
 echo "4. スキーマを適用..."
 $COMPOSE_CMD exec -T postgres psql -U flowerseller -d flowerseller < backend/schema.sql
 
+echo "4.5. 追加テーブル用マイグレーション（出荷履歴・直接販売）を適用..."
+for mig in backend/migrations/006_add_shipments.sql backend/migrations/007_add_direct_sale_listings.sql; do
+  $COMPOSE_CMD exec -T postgres psql -U flowerseller -d flowerseller < "$mig"
+done
+
 echo "5. デモ用パスワードのハッシュを生成（団体名: デモ花屋 / パスワード: demo）..."
 if ! command -v go >/dev/null 2>&1; then
   echo "エラー: デモユーザー用のハッシュ生成に Go が必要です。Go をインストールするか、backend で go run ./cmd/gen-bcrypt を実行して得たハッシュを backend/seed.sql の DEMO_HASH_PLACEHOLDER と差し替えてください。"
@@ -81,6 +86,9 @@ fi
 
 echo "6. デモデータを投入..."
 sed "s|DEMO_HASH_PLACEHOLDER|$DEMO_HASH|g" backend/seed.sql | $COMPOSE_CMD exec -T postgres psql -U flowerseller -d flowerseller
+
+echo "6.5. 直接販売サンプルデータを投入..."
+$COMPOSE_CMD exec -T postgres psql -U flowerseller -d flowerseller < backend/seed-direct-sale-listings.sql
 
 if [ "$WITH_DEPS" = true ]; then
   echo "7. 依存関係をインストール（--deps）..."
