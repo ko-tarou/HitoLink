@@ -24,6 +24,8 @@ type ProductNewFormProps = {
   defaultCategoryId?: string;
   defaultBasePrice?: number;
   defaultDisposalDays?: number;
+  /** 登録成功後のリダイレクト先。未指定時は /inventory */
+  successRedirect?: string;
 };
 
 export function ProductNewForm({
@@ -31,6 +33,7 @@ export function ProductNewForm({
   defaultCategoryId = "",
   defaultBasePrice,
   defaultDisposalDays = 3,
+  successRedirect = "/inventory",
 }: ProductNewFormProps) {
   const router = useRouter();
   const [name, setName] = useState("");
@@ -98,7 +101,7 @@ export function ProductNewForm({
         description: description.trim() || null,
         disposal_days: disposalDays ? Number(disposalDays) : null,
       });
-      router.replace("/inventory");
+      router.replace(successRedirect);
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "登録に失敗しました");

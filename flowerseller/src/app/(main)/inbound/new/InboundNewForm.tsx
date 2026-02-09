@@ -11,8 +11,11 @@ type ProductRow = { product_id: string; quantity: number; unit_price: number | n
 
 export function InboundNewForm({
   products,
+  successRedirect = "/inbound",
 }: {
   products: { id: string; name: string }[];
+  /** 登録成功後のリダイレクト先 */
+  successRedirect?: string;
 }) {
   const router = useRouter();
   const [items, setItems] = useState<ProductRow[]>([
@@ -56,7 +59,7 @@ export function InboundNewForm({
           unit_price: r.unit_price ?? undefined,
         })),
       });
-      router.push("/inbound");
+      router.push(successRedirect);
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "登録に失敗しました");

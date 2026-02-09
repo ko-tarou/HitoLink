@@ -12,11 +12,14 @@ CREATE TYPE user_role AS ENUM ('admin', 'member');
 CREATE TYPE inbound_status AS ENUM ('pending', 'processed', 'failed');
 
 -- Users (replaces Supabase auth.users + profiles)
+-- ログインは団体名(organization_name) + パスワードで行う
+-- business_type: 'seller'=販売者, 'producer'=生産者, 'intermediary'=仲介者
 CREATE TABLE users (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  email TEXT NOT NULL UNIQUE,
+  organization_name TEXT NOT NULL UNIQUE,
   password_hash TEXT NOT NULL,
   role user_role NOT NULL DEFAULT 'member',
+  business_type TEXT CHECK (business_type IS NULL OR business_type IN ('seller', 'producer', 'intermediary')),
   display_name TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
@@ -144,6 +147,64 @@ CREATE TABLE price_adjustment_history (
 
 CREATE INDEX idx_price_adjustment_created ON price_adjustment_history(created_at);
 
+-- 生産者: 栽培管理（現在栽培中の花・植付数・収穫数・収穫率）
+-- 品目はテキスト入力で product_name に保存。product_id は互換用に nullable。
+CREATE TABLE cultivation_batches (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  product_id UUID REFERENCES products(id) ON DELETE SET NULL,
+  product_name TEXT NOT NULL,
+  quantity_planted DECIMAL(12, 2) NOT NULL CHECK (quantity_planted > 0),
+  quantity_harvested DECIMAL(12, 2) CHECK (quantity_harvested IS NULL OR quantity_harvested >= 0),
+  harvest_rate DECIMAL(5, 2) CHECK (harvest_rate IS NULL OR (harvest_rate >= 0 AND harvest_rate <= 100)),
+  started_at DATE NOT NULL DEFAULT CURRENT_DATE,
+  expected_harvest_at DATE,
+  status TEXT NOT NULL DEFAULT 'growing' CHECK (status IN ('growing', 'harvested')),
+  notes TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX idx_cultivation_batches_product ON cultivation_batches(product_id);
+CREATE INDEX idx_cultivation_batches_status ON cultivation_batches(status);
+CREATE INDEX idx_cultivation_batches_started ON cultivation_batches(started_at);
+
+-- 生産者: 出荷履歴（表示のみ。生産者からの変更は行わない）
+CREATE TABLE shipments (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  shipped_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  destination TEXT,
+  notes TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE shipment_items (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  shipment_id UUID NOT NULL REFERENCES shipments(id) ON DELETE CASCADE,
+  product_name TEXT NOT NULL,
+  quantity DECIMAL(12, 2) NOT NULL CHECK (quantity > 0),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX idx_shipments_shipped_at ON shipments(shipped_at DESC);
+CREATE INDEX idx_shipment_items_shipment ON shipment_items(shipment_id);
+
+-- 生産者: 直接販売の出品（メルカリ風・自分の出品一覧）
+-- delivery_option: pickup_only=現地のみ, delivery_only=配送のみ, both=現地・配送可
+CREATE TABLE direct_sale_listings (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  created_by UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  product_name TEXT NOT NULL,
+  price DECIMAL(12, 2) NOT NULL CHECK (price >= 0),
+  quantity DECIMAL(12, 2) NOT NULL CHECK (quantity >= 0),
+  delivery_option TEXT NOT NULL DEFAULT 'both' CHECK (delivery_option IN ('pickup_only', 'delivery_only', 'both')),
+  image_url TEXT,
+  description TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX idx_direct_sale_listings_created_by ON direct_sale_listings(created_by);
+
 -- Triggers for updated_at
 CREATE OR REPLACE FUNCTION set_updated_at()
 RETURNS TRIGGER AS $$
@@ -157,3 +218,5 @@ CREATE TRIGGER users_updated_at BEFORE UPDATE ON users FOR EACH ROW EXECUTE PROC
 CREATE TRIGGER categories_updated_at BEFORE UPDATE ON categories FOR EACH ROW EXECUTE PROCEDURE set_updated_at();
 CREATE TRIGGER products_updated_at BEFORE UPDATE ON products FOR EACH ROW EXECUTE PROCEDURE set_updated_at();
 CREATE TRIGGER inventory_batches_updated_at BEFORE UPDATE ON inventory_batches FOR EACH ROW EXECUTE PROCEDURE set_updated_at();
+CREATE TRIGGER cultivation_batches_updated_at BEFORE UPDATE ON cultivation_batches FOR EACH ROW EXECUTE PROCEDURE set_updated_at();
+CREATE TRIGGER direct_sale_listings_updated_at BEFORE UPDATE ON direct_sale_listings FOR EACH ROW EXECUTE PROCEDURE set_updated_at();

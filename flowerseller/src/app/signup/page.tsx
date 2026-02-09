@@ -1,16 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { pageContainer } from "@/lib/ui-classes";
 import { btn } from "@/lib/ui-classes";
 
-export default function LoginPage() {
+export default function SignupPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const redirect = searchParams.get("redirect") ?? "/";
-
   const [organizationName, setOrganizationName] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -22,7 +18,7 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/auth/login", {
+      const res = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -33,12 +29,14 @@ export default function LoginPage() {
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
-        setError((data as { error?: string })?.error ?? "ログインに失敗しました");
+        setError(
+          (data as { error?: string })?.error ?? "アカウントの作成に失敗しました"
+        );
         setLoading(false);
         return;
       }
 
-      router.push(redirect);
+      router.push("/");
       router.refresh();
     } catch {
       setError("接続エラーが発生しました");
@@ -49,7 +47,10 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-base-subtle flex flex-col items-center justify-center px-6 text-text">
       <div className="w-full max-w-sm">
-        <h1 className="text-xl font-bold text-center mb-8">Flower Seller</h1>
+        <h1 className="text-xl font-bold text-center mb-2">アカウント新規作成</h1>
+        <p className="text-center text-sm text-text-muted mb-8">
+          Flower Seller
+        </p>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
@@ -79,9 +80,10 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full px-4 py-3 rounded-lg border-2 border-border bg-base text-text placeholder:text-text-muted focus:border-primary focus:outline-none focus:ring-0"
-              placeholder="パスワード"
-              autoComplete="current-password"
+              placeholder="パスワード（8文字以上推奨）"
+              autoComplete="new-password"
               required
+              minLength={1}
             />
           </div>
 
@@ -96,21 +98,17 @@ export default function LoginPage() {
             disabled={loading}
             className={`w-full py-3 rounded-lg font-semibold text-base text-white transition ${btn.primary} ${loading ? "opacity-70 cursor-not-allowed" : ""}`}
           >
-            {loading ? "ログイン中..." : "ログイン"}
+            {loading ? "作成中..." : "アカウントを作成"}
           </button>
         </form>
 
         <p className="mt-6 text-center text-sm text-text-muted">
-          デモ: 団体名「デモ花屋」/ パスワード「demo」
-        </p>
-
-        <p className="mt-4 text-center text-sm text-text-muted">
-          アカウントをお持ちでない方は{" "}
+          すでにアカウントをお持ちの方は{" "}
           <Link
-            href="/signup"
+            href="/login"
             className="text-primary font-medium hover:underline focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded"
           >
-            新規作成
+            ログイン
           </Link>
         </p>
       </div>

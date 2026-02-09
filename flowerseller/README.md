@@ -6,6 +6,24 @@
 
 **事前に Docker Desktop を起動しておいてください。**
 
+### 一発で全部リセット（新 PC・clone 後向け）
+
+マイグレーションを 1 つずつ実行する代わりに、**DB を含め全部リセットして完璧な状態**にできます。新しい PC で clone したあともこの 1 本で OK です。
+
+```bash
+# DB ボリューム削除 → Postgres 起動 → schema 適用 → デモデータ投入
+./scripts/reset-and-seed.sh
+
+# 新 PC で依存関係も入れる場合
+./scripts/reset-and-seed.sh --deps
+```
+
+あとは「3. Go バックエンドを起動」「4. Next.js を起動」に進んでください。
+
+---
+
+### 手順でやる場合
+
 プロジェクトルート（`flowerseller` の直下）で、次の順に実行します。**別のプロジェクトで PostgreSQL を使っていても、このプロジェクトはポート 5434 を使うので競合しません。**
 
 ### 1. PostgreSQL を Docker で起動
@@ -27,11 +45,35 @@ docker-compose exec -T postgres psql -U flowerseller -d flowerseller < backend/s
 
 ※ スキーマ適用はコンテナ**内**の Postgres に対して行うので、ポートは気にしなくて大丈夫です。
 
-### 2.5 デモデータを投入（初回のみ・任意）
-
-**プロジェクトルート**（`flowerseller` の直下）で実行してください。`backend` にいる場合は `cd ..` で戻ってから実行します。
+**既存DBで `email` から `organization_name` へ移行する場合**は、以下を実行してください。
 
 ```bash
+docker-compose exec -T postgres psql -U flowerseller -d flowerseller < backend/migrations/002_add_organization_name.sql
+```
+
+**既存DBで `users` に業態（販売者/生産者/仲介者）を追加する場合**は、以下を実行してください。
+
+```bash
+docker-compose exec -T postgres psql -U flowerseller -d flowerseller < backend/migrations/003_add_business_type.sql
+```
+
+**生産者の栽培管理（栽培バッチ・収穫率）を使う場合**は、以下を実行してください。
+
+```bash
+docker-compose exec -T postgres psql -U flowerseller -d flowerseller < backend/migrations/004_add_cultivation_batches.sql
+```
+
+### 2.5 デモデータを投入（初回のみ・任意）
+
+**一発リセットを使う場合**は `./scripts/reset-and-seed.sh` で schema と seed がまとめて適用され、デモログイン（団体名「デモ花屋」/ パスワード「demo」）が必ず使える状態になります。
+
+手動で seed だけ流す場合は、デモユーザー用パスワードハッシュを生成してからにしてください。
+
+```bash
+# ハッシュを生成（表示された文字列をコピー）
+cd backend && go run ./cmd/gen-bcrypt
+
+# backend/seed.sql の DEMO_HASH_PLACEHOLDER を、上で表示されたハッシュに置き換えてから実行
 docker-compose exec -T postgres psql -U flowerseller -d flowerseller < backend/seed.sql
 ```
 
@@ -62,7 +104,7 @@ npm run dev
 
 ### 5. ブラウザで開く
 
-**http://localhost:3000** を開いて利用します。
+**http://localhost:3000** を開きます。ログイン画面が表示されるので、デモデータ投入済みの場合は **団体名「デモ花屋」** / **パスワード「demo」** でログイン。アカウントがない場合は「新規作成」から団体名とパスワードを登録できます。
 
 ---
 
@@ -71,7 +113,7 @@ npm run dev
 - **Backend**: Go (Chi) + PostgreSQL (pgx)
 - **DB**: PostgreSQL 15（Docker Compose）
 - **Frontend**: Next.js 14 (App Router) + Tailwind CSS
-- **認証**: JWT（Cookie に保存）
+- **認証**: JWT（Cookie に保存）。ログインは**団体名**と**パスワード**で行います。
 
 ## 環境変数（任意）
 
@@ -111,8 +153,8 @@ psql "postgres://flowerseller:flowerseller@localhost:5432/flowerseller?sslmode=d
 
 ## API 概要（Go）
 
-- `POST /auth/signup` - 新規登録
-- `POST /auth/login` - ログイン（JWT 返却）
+- `POST /auth/signup` - 新規登録（`organization_name`, `password`）
+- `POST /auth/login` - ログイン（`organization_name`, `password` → JWT 返却）
 - `GET/POST /api/products` - 商品一覧・登録
 - `GET/POST /api/inventory_batches` - 在庫バッチ
 - `GET/POST /api/watering_records` - 水やり記録
